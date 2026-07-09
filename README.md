@@ -1,2 +1,3 @@
 # aapat-setu
-Hackathon Project
+
+Hackathon Project for the Fusion Fest
