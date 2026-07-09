@@ -1,12 +1,52 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { useParams, useNavigate } from 'react-router-dom'
+
 import api from '../lib/api'
-import { Card, Button, Badge, priorityBadge, statusBadge } from '../components/ui'
+import { Card, Button, Badge, priorityBadge, statusBadge, Skeleton } from '../components/ui'
 import Map from '../components/Map'
 import BackButton from '../components/BackButton'
 import { useAuth } from '../store/auth'
 import { toast } from '../components/toaster'
-import { Clock, Users, MapPin, Shield, AlertTriangle, Sparkles, CheckCircle2, Mic, Image as ImageIcon, FileText, Send } from 'lucide-react'
+import useRelativeTime from '../lib/useRelativeTime'
+import { Clock, Users, MapPin, Shield, AlertTriangle, Sparkles, CheckCircle2, Image as ImageIcon, FileText } from 'lucide-react'
+
+function DetailSkeleton() {
+  return (
+    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
+      <Skeleton className="h-8 w-24 rounded-lg"/>
+      <Card className="space-y-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Skeleton className="h-8 w-48"/>
+          <Skeleton className="h-6 w-20 rounded-full"/>
+          <Skeleton className="h-6 w-24 rounded-full"/>
+        </div>
+        <Skeleton className="h-4 w-2/3"/>
+      </Card>
+      <div className="grid lg:grid-cols-[1.5fr_1fr] gap-5">
+        <div className="space-y-5">
+          <Card className="space-y-3">
+            <Skeleton className="h-5 w-32"/>
+            <Skeleton className="h-20 w-full rounded-xl"/>
+            <div className="grid grid-cols-4 gap-2">
+              {[0,1,2,3].map(i=><Skeleton key={i} className="h-14 rounded-lg"/>)}
+            </div>
+          </Card>
+          <Card className="!p-0 overflow-hidden">
+            <div className="p-5 border-b border-ink-200 dark:border-ink-800"><Skeleton className="h-5 w-24"/></div>
+            <Skeleton className="h-[350px] w-full rounded-none"/>
+          </Card>
+        </div>
+        <div className="space-y-5">
+          <Card className="space-y-3">
+            <Skeleton className="h-5 w-32"/>
+            {[0,1,2,3].map(i=><Skeleton key={i} className="h-12 w-full"/>)}
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function IncidentDetail() {
   const { id } = useParams()
@@ -40,7 +80,7 @@ export default function IncidentDetail() {
     )
   }, [inc && inc.id])
 
-  if (loading || !inc) return <div className="grid place-items-center min-h-[40vh] text-ink-400">Loading...</div>
+  if (loading || !inc) return <DetailSkeleton/>
 
   const pb = priorityBadge(inc.ai_severity||inc.severity); const sb = statusBadge(inc.status)
   const myTask = tasks.find(t => t.assignee_id === user.id)
@@ -59,24 +99,24 @@ export default function IncidentDetail() {
   const isResponder = ['responder','admin','police','fire','hospital','municipality','ngo'].includes(user.role)
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
+    <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:.3 }} className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
       <BackButton label="Back to incidents" />
 
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl md:text-3xl font-extrabold capitalize flex items-center gap-2">
+              <h1 className="text-2xl md:text-3xl font-extrabold capitalize flex items-center gap-2 break-words">
                 <AlertTriangle className="text-red-500" size={26}/>
-                {inc.incident_type.replace('_',' ')}
+                {(inc.incident_type||'').replaceAll('_',' ')}
               </h1>
               <Badge color={pb.color}>{pb.label}</Badge>
-              <Badge color={sb.color}>{sb.label.replace('_',' ')}</Badge>
+              <Badge color={sb.color}>{sb.label.replaceAll('_',' ')}</Badge>
             </div>
-            <p className="text-ink-500 text-sm mt-1 flex items-center gap-3 flex-wrap">
-              <span className="flex items-center gap-1"><Clock size={14}/> Reported {new Date(inc.created_at).toLocaleString()}</span>
-              {inc.people_affected>0 && <span className="flex items-center gap-1"><Users size={14}/> ~{inc.people_affected} people affected</span>}
-              {inc.address && <span className="flex items-center gap-1"><MapPin size={14}/> {inc.address}</span>}
+            <p className="text-ink-500 dark:text-ink-400 text-sm mt-1 flex items-center gap-3 flex-wrap">
+              <span className="flex items-center gap-1"><Clock size={14}/> <ReportedTime time={inc.created_at}/></span>
+              {(inc.people_affected||0)>0 && <span className="flex items-center gap-1"><Users size={14}/> ~{inc.people_affected} people affected</span>}
+              {inc.address && <span className="flex items-center gap-1 break-words"><MapPin size={14}/> {inc.address}</span>}
             </p>
           </div>
           <div className="flex gap-2">
@@ -208,7 +248,7 @@ export default function IncidentDetail() {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -224,11 +264,17 @@ function AIStat({ label, value, color }) {
   </div>
 }
 
+function ReportedTime({ time }) {
+  const when = useRelativeTime(time)
+  return <span>Reported {when}</span>
+}
+
 function TimelineItem({ label, note, time, active }) {
+  const when = useRelativeTime(time)
   return <div className="relative">
-    <div className={`absolute -left-[22px] top-1 w-4 h-4 rounded-full border-2 ${active?'bg-brand-500 border-brand-600':'bg-ink-300 dark:bg-ink-600 border-ink-200 dark:border-ink-500'}`}/>
-    <div className="font-semibold text-sm capitalize">{label.replace('_',' ')}</div>
-    {note && <div className="text-xs text-ink-500">{note}</div>}
-    {time && <div className="text-[10px] text-ink-400">{new Date(time).toLocaleString()}</div>}
+    <div className={'absolute -left-[22px] top-1 w-4 h-4 rounded-full border-2 ' + (active?'bg-brand-500 border-brand-600':'bg-ink-300 dark:bg-ink-600 border-ink-200 dark:border-ink-500')}/>
+    <div className="font-semibold text-sm capitalize">{label.replaceAll('_',' ')}</div>
+    {note && <div className="text-xs text-ink-500 dark:text-ink-400">{note}</div>}
+    {time && <div className="text-[10px] text-ink-400 tabular-nums">{when}</div>}
   </div>
 }

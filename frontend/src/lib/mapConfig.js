@@ -1,53 +1,53 @@
 /* =============================================================
-   Map configuration — here's where to add your own API keys.
-   =============================================================
-   OpenRouteService (HeiGIT) is the routing/directions service
-   from Heidelberg University (heigit.org). It's free (fair-use)
-   for non-commercial/hackathon projects.
-
-   1. Get a free key: https://openrouteservice.org/dev/#/signup
-   2. Paste it below as ORS_API_KEY = 'your-key-here'
-   3. Restart the dev server / rebuild the frontend.
-
-   If no key is set, routing silently disables and a message is
-   shown ("Add ORS key to enable routing").
-
-   You can also override at runtime by setting window.ORS_API_KEY
-   before the app loads, or via env var VITE_ORS_API_KEY.
+   Map configuration — OpenRouteService (HeiGIT) routing client.
+   Token provided for HackFusion 2026.
    ============================================================= */
 
-// 👇 PASTE YOUR OPENROUTESERVICE (HEIGIT) API KEY HERE
+// 🔑 OpenRouteService (HeiGIT) API key — production token
 export const ORS_API_KEY =
   (typeof window !== 'undefined' && window.VITE_ORS_API_KEY) ||
   (import.meta && import.meta.env && import.meta.env.VITE_ORS_API_KEY) ||
-  '' // <-- paste your key inside these quotes, e.g. '5b3...'
+  'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjlhZDA0YzY2OTM3OTQ3ZjliM2RkNjIxZGNhNDY1YjdhIiwiaCI6Im11cm11cjY0In0='
 
-// OpenRouteService base URL (official HeiGIT endpoint).
+// OpenRouteService base URL
 export const ORS_BASE = 'https://api.openrouteservice.org'
 
-// Routing profile to use for emergency response vehicles.
-// Options: 'driving-car', 'cycling-regular', 'foot-walking'
-export const ROUTING_PROFILE = 'driving-car'
+// Available routing profiles (optimized for Nepal terrain/roads)
+export const ROUTING_PROFILES = {
+  driving: 'driving-car',
+  walking: 'foot-walking',
+  cycling: 'cycling-regular',
+}
+export const DEFAULT_PROFILE = 'driving-car'
 
-// OpenStreetMap geocoding (Nominatim) — no key required.
+// Nepal bounding box for route sanity clamps (approx)
+export const NEPAL_BOUNDS = {
+  minLon: 80.0, maxLon: 88.2,
+  minLat: 26.3, maxLat: 30.5,
+}
+
+// OpenStreetMap geocoding (no key)
 export const NOMINATIM_URL = 'https://nominatim.openstreetmap.org'
 
-/* Helper: get a driving route as GeoJSON polyline [lat,lng][]
-   Usage:
-     import { getRoute } from '../lib/mapConfig'
-     const geo = await getRoute([[27.71,85.32],[27.72,85.33]])
-   Returns null if no key or error.
-*/
-export async function getRoute(start, end) {
+/**
+ * Fetch a route as GeoJSON polyline + steps.
+ * @param {[number,number]} start [lat, lng]
+ * @param {[number,number]} end   [lat, lng]
+ * @param {string} profile  driving-car | foot-walking | cycling-regular
+ */
+export async function getRoute(start, end, profile = DEFAULT_PROFILE) {
   if (!ORS_API_KEY) return null
   try {
-    // ORS expects [lng,lat]
     const body = {
       coordinates: [[start[1], start[0]], [end[1], end[0]]],
-      instructions: false,
+      instructions: true,
+      instructions_format: 'html',
       geometry_simplify: true,
+      language: 'en',
+      options: { avoid_features: ['ferries'] },
+      extra_info: ['waytype','surface','steepness'],
     }
-    const r = await fetch(`${ORS_BASE}/v2/directions/${ROUTING_PROFILE}/geojson`, {
+    const r = await fetch(`${ORS_BASE}/v2/directions/${profile}/geojson`, {
       method: 'POST',
       headers: {
         Authorization: ORS_API_KEY,
@@ -59,20 +59,33 @@ export async function getRoute(start, end) {
     const data = await r.json()
     const feat = data.features && data.features[0]
     if (!feat) return null
-    // ORS returns coords as [lng,lat]; convert to Leaflet [lat,lng]
+    const seg = feat.properties.segments && feat.properties.segments[0]
     const coords = feat.geometry.coordinates.map(([lng, lat]) => [lat, lng])
     return {
       coords,
-      distance_km: Math.round((feat.properties.segments[0].distance || 0) / 100) / 10,
-      duration_min: Math.round((feat.properties.segments[0].duration || 0) / 60),
+      distance_km: Math.round((seg?.distance || feat.properties.summary.distance || 0) / 100) / 10,
+      duration_min: Math.round((seg?.duration || feat.properties.summary.duration || 0) / 60),
+      steps: (seg?.steps || []).map((s) => ({
+        instruction: stripHtml(s.instruction),
+        distance_m: Math.round(s.distance),
+        duration_s: Math.round(s.duration),
+        maneuver: s.type,
+        name: s.name || '',
+      })),
+      bbox: data.bbox,
     }
   } catch {
     return null
   }
 }
 
-/* Reverse-geocode lat/lng to an address (no API key needed).
-   Usage: const addr = await reverseGeocode(27.717, 85.324) */
+function stripHtml(html) {
+  if (typeof document === 'undefined') return String(html).replace(/<[^>]+>/g, '')
+  const tmp = document.createElement('div')
+  tmp.innerHTML = html
+  return tmp.textContent || tmp.innerText || ''
+}
+
 export async function reverseGeocode(lat, lng) {
   try {
     const r = await fetch(

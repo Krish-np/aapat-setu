@@ -339,15 +339,34 @@
     "title_ph": "Alert title",
     "message_ph": "Alert message…",
     "severity": "Severity",
-    "send": "Send Alert",
-    "no_permission": "You don't have permission to broadcast alerts."
+    "severity_info": "Info",
+    "severity_warning": "Warning",
+    "severity_critical": "Critical",
+    "send": "Broadcast to all users",
+    "send_short": "Send Alert",
+    "no_permission": "You don't have permission to broadcast alerts.",
+    "none": "No alerts yet",
+    "none_desc": "When agencies broadcast safety alerts, they will appear here."
   },
   "analytics": {
     "title": "Intelligence Analytics",
-    "subtitle": "Real-time emergency intelligence for decision makers"
+    "subtitle": "Real-time emergency intelligence for decision makers",
+    "total": "Total",
+    "active": "Active",
+    "critical": "Critical",
+    "resolved": "Resolved",
+    "by_type": "Incidents by Type",
+    "by_severity": "Incidents by Severity",
+    "by_status": "Status Breakdown"
   },
   "notifications": {
-    "title": "Notifications"
+    "title": "Notifications",
+    "subtitle": "Live updates from across the network.",
+    "all_caught_up": "All caught up",
+    "none_right_now": "No notifications right now.",
+    "new_badge": "new",
+    "welcome": "Welcome to Aapat Setu",
+    "welcome_msg": "AI triage engine online. You will receive real-time alerts for new incidents and updates on your reports."
   },
   "knowledge": {
     "title": "First Aid & Safety Guide",
@@ -355,7 +374,27 @@
   },
   "admin": {
     "title": "Super Admin Panel",
-    "subtitle": "System-wide monitoring, users, resources, and AI settings"
+    "subtitle": "System-wide monitoring, users, resources, and AI settings",
+    "total_users": "Total Users",
+    "total_incidents": "Total Incidents",
+    "resources": "Resources",
+    "ai_online": "AI Online",
+    "ai_engine": "AI Prediction Engine",
+    "live": "Live",
+    "preposition": "Pre-positioning:",
+    "users_by_role": "Users by Role",
+    "system": "System",
+    "version": "Version",
+    "auth": "Auth",
+    "database": "Database",
+    "realtime": "Real-time",
+    "maps": "Maps",
+    "ai_label": "AI",
+    "ai_value": "Triage + Routing",
+    "languages": "Languages",
+    "theme": "Theme",
+    "theme_value": "Dark / Light",
+    "recent": "Recent Incidents"
   },
   "map_page": {
     "title": "Live Operations Map",
@@ -369,6 +408,12 @@
     "success_resource_add": "Resource added",
     "success_resource_del": "Resource deleted",
     "success_toggle": "Availability updated",
-    "error_generic": "Something went wrong"
+    "error_generic": "Something went wrong",
+    "alert_sent": "Alert broadcast to all users",
+    "task_claimed": "Task claimed!",
+    "marked": "Marked",
+    "resolved": "Resolved",
+    "location_captured": "Location captured",
+    "location_failed": "Could not get location — enter manually"
   }
 }

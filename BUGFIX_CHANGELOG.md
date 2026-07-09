@@ -1,183 +1,188 @@
-# Aapat Setu — Final Bug Fix Changelog
+# Aapat Setu — UI/UX Overhaul & Bugfix Changelog (FINAL)
 
-All bugs from the "Final Bug & Error Log" are fixed in this build.
+This ZIP is a complete fresh copy of the project. Extract it over your
+existing `aapat-setu/` folder (or replace the folder entirely). Works with
+your XAMPP MySQL setup (`aapatsetudb`) and `run.bat` as before.
 
-## 1. 🌐 TRANSLATION / LANGUAGE SYSTEM FIXES
+---
 
-**Root cause discovered & fixed:**
-A previous automated script had **corrupted JSX** in 8 pages. It inserted `<BackButton/>`
-in the middle of Tailwind class names (e.g. `className="max-w<BackButton/>-7xl"`),
-silently breaking rendering for those pages (Tasks, Alerts, Analytics, Knowledge,
-MapPage, Notifications, Admin, Report). When you switched language on a page that
-used these components, React crashed or half-rendered, making the toggle appear
-"broken".
+## 1. Layout, Typography & Visual Polish
 
-Also, most dashboard strings were hardcoded English and had no Nepali translation keys.
+- Normalized grid/flex containers across all dashboards so cards align
+  cleanly on all breakpoints. Fixed the earlier "zigzag" layout bug caused
+  by a malformed `<BackButton/>` accidentally injected inside Tailwind
+  className strings on multiple pages (every page audited).
+- Inter + Plus Jakarta Sans restored as the default English font stack
+  (no external Devanagari Google Font added, per request).
+- Added dedicated `html[lang="ne"]` CSS rules that switch to a robust
+  Devanagari system font stack (Mangal → Noto Sans Devanagari local →
+  Devanagari MT → Kokila → Arial Unicode MS) with increased line-height
+  (1.65 body / 1.5 headings) and slightly wider gap/spacing values,
+  so नेपाली renders without matra clipping or box-shift, and switching
+  back to English restores the original Inter/Jakarta layout with zero
+  layout jump.
+- Fixed Tailwind purge risk: all dynamic color classes (badges,
+  notification cards, alert severity bars, AI briefing cards) replaced
+  with static color maps so colors render in production builds.
+- Card component upgraded with Framer Motion hover lift + active press
+  (`whileHover` / `whileTap` spring).
+- Phoenix-style glass cards, soft shadows, rounded-2xl radii, and refined
+  color palette across light & dark themes.
 
-**Fixes applied:**
-- All 8 corrupted BackButton injections repaired (proper JSX: `<><BackButton/><div>…</div></>`).
-- Complete translation dictionary (`i18n/en.json`, `i18n/ne.json`) expanded to cover
-  every dashboard string — tasks, incidents, crews, resources, alerts, analytics,
-  knowledge, admin, map, report wizard, toasts, nav, common actions.
-- Nepali font **Noto Sans Devanagari** loaded from Google Fonts; CSS rule
-  `html[lang="ne"] body { font-family: 'Noto Sans Devanagari', … }` applies it
-  automatically when language switches. `document.documentElement.lang` is synced
-  via `useEffect` in `App.jsx` so CSS detects the change.
-- Global CSS rule `p, span, div, li, a, label, button, td, th { overflow-wrap:
-  break-word; word-break: break-word; hyphens: auto }` prevents Devanagari/long
-  English strings from bleeding out of cards.
-- Headings now use `line-height: 1.4`, `break-words`, and `word-break: break-word`
-  specifically tuned for Nepali text (longer word forms than English).
-- Sidebar nav labels now use `t(...)` keys and translate in both languages.
-- Nepali heading/body font stacks swapped (Noto Sans Devanagari > Plus Jakarta Sans
-  for headings when `lang="ne"`).
+## 2. Micro-interactions & Animations (Framer Motion)
 
-## 2. 🔐 ROLE-BASED ACCESS CONTROL / LOGIC FIXES
+- Global page transitions in `AppShell.jsx` (fade + slide-up on route
+  change).
+- Sidebar nav items: hover translate, scale on icon, animated active
+  `layoutId` pill indicator.
+- Language `EN / ने` pill (Sidebar + Navbar): `whileTap` scale +
+  `whileHover` scale spring.
+- Notification / alert / task / admin rows all use AnimatePresence
+  staggered entry (fade + slide-up, delay-capped at 0.3–0.4s).
+- Mobile hamburger menu: animated backdrop + slide drawer.
+- Toasts: spring entry from the right, exit slide, deduplication to
+  prevent toast-waterfall.
+- Buttons already had `active:scale-[0.98]`; retained for tactile press.
 
-**"Report Incident" button hidden for non-citizen responders:**
-- `components/Sidebar.jsx`: the "Report" nav item is now visible **ONLY** for
-  citizens (it was previously shown to every role).
-- `pages/AgencyDashboard.jsx`: the big "Report Incident" CTA in the header is now
-  rendered only when `canReport = ['responder','admin'].includes(user.role)` —
-  fire, police, municipality, hospital, ngo no longer see it. They manage incoming
-  feeds only. Citizens/volunteers report via their home page CTA.
+## 3. Notifications: Live Timestamps + WebSocket Propagation
 
-**Task boards scoped per role (no more duplicate cards):**
-- **Frontend (`pages/Tasks.jsx`)** — added `ROLE_FOCUS` mapping:
-  - fire → fire / forest_fire / building_collapse / rescue
-  - police → accident / missing_person / crowd / security / crime
-  - hospital → medical / accident / injury
-  - ngo → shelter / food / water / clothing / flood / relief
-  - municipality → storm / power_failure / water_issue / flood / debris / road
-  - volunteer, responder, admin → see all
-  - citizen → redirected away
-  Also added a `busy` state lock so buttons disable while an action is in flight.
-- **Backend (`backend/app/routers/tasks.py`)** — `GET /api/tasks` now scopes results
-  server-side:
-  - citizen → []
-  - volunteer → unclaimed + their own
-  - hospital/police/fire/ngo/municipality → tasks matching their task_type OR
-    assignee_role OR assigned to them specifically
-  - responder/admin → all tasks
+- **Fixed "0s ago" frozen welcome card** — welcome notification uses a
+  real ISO timestamp (500ms in the past) so relative time starts at
+  "just now" → seconds → minutes, rather than being stuck on 0s.
+- **Removed hardcoded "6h/7h ago" strings** — every notification,
+  timeline entry, and card uses `useRelativeTime` (dayjs +
+  `relativeTime` plugin) with smart tick intervals (1s when <1 min,
+  30s when <1h, 60s when older) to re-render elapsed time live.
+- **Singleton WebSocket** in `lib/api.js` guarantees a single socket
+  across the app; duplicate mounts don't open new connections.
+- Global `WsListener` mounted in `App.jsx` toasts every
+  `incident_created` and `alert_created` event, so new citizen reports
+  propagate as high-priority toasts platform-wide.
+- `Notifications.jsx` rewritten: merges WS "live" queue with
+  server-fetched incidents, dedupes by `_id`, AnimatePresence list,
+  live "N new" badge, colored severity icons, fully i18n'd.
+- All relative times (Tasks "Posted", IncidentDetail "Reported",
+  Timeline items, Admin recent incidents, Alert list) use
+  `useRelativeTime` — no stale strings anywhere.
 
-**KPI Dashboard Metrics desync fixed:**
-- `AgencyDashboard.jsx` now subscribes to the WebSocket via `wsConnect(...)` and
-  calls `load()` on every `incident_created` / `incident_updated` / `task_updated`
-  event. Stat cards (critical/active/resolved count) are refreshed live, so marking
-  an incident "Resolved" from Municipality view instantly decrements the "critical
-  need attention" banner and KPI tiles.
+## 4. Full EN / नेपाली Localization Audit
 
-## 3. 🔔 REAL-TIME / TOAST BUG FIXES
+- Every hardcoded title/subtitle/copy in Alerts, Analytics, Admin,
+  Notifications, Knowledge, Tasks, IncidentDetail is now wrapped in
+  `t('key')` calls.
+- Added 40+ new keys to `i18n/en.json` and `i18n/ne.json` (alerts
+  severities, analytics stats, admin panel labels, notification copy,
+  toast strings).
+- Language toggle remains the `EN | ने` pill (no globe icon) in both
+  Sidebar and Navbar, with micro-animations.
+- `<html lang="…">` is synced to i18n language on every change so the
+  Nepali font stack and spacing rules activate/deactivate cleanly.
 
-**Toast Waterfall (infinite re-render spam):**
-Two bugs combined to cause this:
+## 5. OpenRouteService Custom Token + Routing
 
-1. **`WsListener` recreated the WS connection on every render** because its
-   useEffect dependency was `[nav]` which changed reference constantly. Fixed: empty
-   deps with `nav` already captured at stable ref, plus a `useRef(new Set())` dedupe
-   cache keyed on `event:id` that suppresses duplicate toasts within a sliding
-   window.
-2. **`wsConnect()` created a new WebSocket for every subscriber** and never shared
-   the connection. React StrictMode + re-renders opened 3–7 sockets, each firing
-   the same toast. Fixed: **singleton WebSocket** in `lib/api.js` with a Set of
-   listeners. Multiple components can subscribe; only one TCP connection exists.
-   Reconnect logic uses exponential backoff (1s→8s cap).
+- Token baked into `frontend/src/lib/mapConfig.js`:
+  `eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjlhZDA0YzY2OTM3OTQ3ZjliM2RkNjIxZGNhNDY1YjdhIiwiaCI6Im11cm11cjY0In0=`
+- Three routing profiles wired up: **driving-car**, **foot-walking**,
+  **cycling-regular**.
+- `getRoute()` returns GeoJSON coordinate array, distance (km),
+  duration (minutes), turn-by-turn steps (HTML stripped to plain text),
+  and bbox.
+- `Map.jsx` fully rewritten premium component:
+  - 4-severity teardrop pins (Lucide icons inside), critical pins pulse.
+  - Lucide POI markers (hospitals, police, fire, NGOs, shelters,
+    supplies, municipality) with colored icon tiles + tail.
+  - 3-ring user-location dot (solid / halo / pulse).
+  - Route polyline drawn as shadow + highlight stroke.
+  - Bottom-right glass zoom + / − / recenter controls (default Leaflet
+    controls hidden).
+  - Top-left ETA badge with route summary + collapsible turn-by-turn
+    steps.
+  - Severity-colored popups with relative timestamps + "View details"
+    CTA.
+  - `key={isDark?'dark':'light'}` on MapContainer forces remount on
+    theme switch so tile themes refresh.
+- `MapPage.jsx`: premium chip filter tabs (not native select), mobile
+  slide-drawer incident list, skeleton loader, motion entry.
+- `Report.jsx`: matching premium zoom/recenter controls, animated
+  pick-pin, theme-reactive, submit-disabled while loading.
+- `IncidentDetail.jsx`: directions/routing auto-enabled, skeleton,
+  motion page entry.
 
-**Toast styling unified:**
-- Rewrote `components/toaster.jsx`:
-  - Distinct color schemes for ok (emerald), err/error (red), alert/warn (amber),
-    info (blue), loading (brand).
-  - Color-tinted icon + 4px colored left border + matching bg tint (e.g.
-    `bg-red-50/95 dark:bg-red-500/10`).
-  - Success uses CheckCircle2, errors use AlertOctagon (octagon is universally
-    "error/danger"), alerts use AlertTriangle, info uses Info.
-  - Framer Motion `layout` prop so stacking toasts reflow smoothly when one
-    dismisses.
-  - Built-in duplicate suppression: the same `kind:message` within 1.5 seconds is
-    dropped at the toaster layer too (belt & suspenders with WS dedupe).
-  - Close button, proper aria-live region, `break-words` for long messages.
+## 6. SMTP Email Alerts
 
-## 4. 📝 FORM HANDLING / UI FLUIDITY FIXES
+- New `backend/app/email_service.py` using **FastAPI-Mail**:
+  - Gracefully disables when SMTP env vars are unset (demo/offline
+    works without errors).
+  - `send_alert_email()` / `format_alert_html()` — branded red HTML
+    template.
+- Backend fires emails (non-blocking via `asyncio.create_task`) on:
+  - **Critical/high severity incidents** (`routers/incidents.py`).
+  - **Critical/warning public alerts** (`routers/incidents.py` +
+    `routers/alerts.py`).
+- `fastapi-mail==1.4.1` added to `backend/requirements.txt`.
+- `.env` commented SMTP block included — uncomment and fill:
+  ```
+  SMTP_HOST=smtp.gmail.com
+  SMTP_PORT=587
+  SMTP_USER=you@gmail.com
+  SMTP_PASSWORD=your-app-password
+  SMTP_FROM="Aapat Setu <no-reply@aapatsetu.app>"
+  SMTP_TLS=true
+  ALERT_EMAIL_TO=ops@yourdomain.com,dispatch@yourdomain.com
+  ```
+  For Gmail, create an App Password at https://myaccount.google.com/apppasswords.
+  Outlook/Hotmail: `smtp-mail.outlook.com` port 587 STARTTLS.
 
-**Double-submit / double-click protection on Submit to AI:**
-- `pages/Report.jsx` `submit()` function now returns early if `submitting===true`
-  (double-click guard at the handler level, not just at the button).
-- "Next" button also disables when `submitting` so users can't skip steps mid-post.
-- `pages/Tasks.jsx` all `claim()`/`update()` actions set `busy=true` and disable
-  every button while the request is in flight, preventing duplicate claims.
-- "Submit to AI" / "AI Processing…" strings use i18n (`report.submit_ai` /
-  `report.processing`) so they translate.
+## 7. Skeleton Loaders Across Dashboards
 
-**Text overflow / layout bleeding fixed:**
-- Global `word-break/overflow-wrap` rules (see section 1).
-- Critical banner `<p>` changed from `line-clamp-2` to `line-clamp-3` with
-  `leading-relaxed break-words min-w-0 flex-1` to contain long Nepali/English
-  summaries.
-- All incident card descriptions (`AppHome`, `AgencyDashboard`, `Tasks`,
-  `Incidents`) updated to `line-clamp-3` (gives more room), `leading-relaxed`,
-  `break-words`, with null-safety (`|| '—'`) so empty summaries don't render
-  "undefined".
-- Badges use `flex-wrap gap-1.5` and `break-words` so they don't push out of cards.
-- `min-w-0` added to flex children that contain text (the classic flex overflow
-  bug) in headers, critical banners, sidebar user card.
+Every page that fetches data now shows a Phoenix-style shimmer skeleton
+while loading:
 
-**Bonus fixes while in there:**
-- `components/AppShell.jsx` mobile drawer now uses proper React state (`mobileOpen`)
-  instead of direct DOM classList hacks, closes properly when backdrop tapped,
-  shows X icon when open.
-- `components/Map.jsx` theme tile switching is now reactive (it re-keys the
-  MapContainer on theme change so light/dark tiles swap instantly without refresh).
-- `pages/Report.jsx` location-step map has loading state, recenter animation, and
-  the teardrop pin styling matching the main map.
-- Build succeeds: `✓ built in 1.37s` with no errors or warnings.
+| Page | Skeleton |
+|---|---|
+| AppHome / Home | ✅ HomeSkeleton (existing) |
+| AgencyDashboard | ✅ DashboardSkeleton (existing) |
+| MapPage | ✅ MapPageSkeleton |
+| Notifications | ✅ (immediate render, content via useRelativeTime) |
+| Alerts | ✅ AlertSkeleton |
+| Analytics | ✅ AnalyticsSkeleton (stats + charts) |
+| Tasks | ✅ TasksSkeleton |
+| Admin | ✅ AdminSkeleton (stats, roles, system, incidents) |
+| IncidentDetail | ✅ DetailSkeleton |
+| Incidents | ✅ SkeletonTable |
+| Crews | ✅ CrewsSkeleton (existing) |
+| Resources | ✅ ResourcesSkeleton (existing) |
+| Knowledge | ✅ static content, motion entry |
 
-## Files changed (replace all of these on your Windows machine)
+## 8. Backend Role-Scoped Task List (minimal backend change)
 
-**Backend**
-- `backend/app/routers/tasks.py` — role-scoped task listing
+`routers/tasks.py` now filters by role server-side (matches UI logic):
 
-**Frontend**
-- `frontend/src/App.jsx` — singleton WS subscription, i18n lang sync, dedupe toasts
-- `frontend/src/index.css` — Noto Sans Devanagari font, global break-words, Nepali
-  typography, better scrollbars
-- `frontend/src/i18n/en.json` — complete English strings
-- `frontend/src/i18n/ne.json` — complete Nepali strings
-- `frontend/src/lib/api.js` — singleton WebSocket with listener multiplexing
-- `frontend/src/components/toaster.jsx` — redesigned colored toasts w/ dedupe
-- `frontend/src/components/Sidebar.jsx` — i18n nav labels, role-gated Report link
-- `frontend/src/components/AppShell.jsx` — proper state-driven mobile drawer
-- `frontend/src/pages/AgencyDashboard.jsx` — role-gated Report CTA, live WS refresh
-  of KPIs, i18n, role-scoped sidebar cards, break-words
-- `frontend/src/pages/AppHome.jsx` — break-words, i18n greeting/banner
-- `frontend/src/pages/Tasks.jsx` — rewritten: role scope, busy lock, i18n, break-words
-- `frontend/src/pages/Report.jsx` — double-submit guard, i18n, fixed corrupted JSX,
-  disabled Next/Back during submit, theme-reactive map
-- `frontend/src/pages/Admin.jsx`, `Alerts.jsx`, `Analytics.jsx`, `Knowledge.jsx`,
-  `MapPage.jsx`, `Notifications.jsx` — fixed corrupted `<BackButton/>` JSX (the
-  root cause of the "broken layout" symptom)
+- hospital → medical
+- fire → fire / rescue / building_collapse
+- police → police / accident / security / crime / missing_person
+- ngo → shelter / food / water / clothing / flood / relief
+- municipality → rescue / shelter / transport / water / food / storm / road
+- volunteer → unclaimed tasks + their own
+- responder / admin → all
 
-## Setup instructions (Windows, your machine)
+## 9. How to run
 
-1. Close any running terminals (Ctrl+C anything running on ports 5173/8000).
-2. Delete these cached folders from your project:
-   - `frontend\node_modules\.vite`
-   - `frontend\dist`
-   - `backend\static\assets`
-3. Extract `aapatsetu_fresh.zip` into `C:\Users\Hp\Desktop\git-hub\aapat-setu\`
-   (overwrite all when prompted).
-4. Command Prompt:
+1. Extract this ZIP so the folder replaces `C:\Users\Hp\Desktop\git-hub\aapat-setu\`.
+2. Install the new backend dependency once (first run only):
    ```
-   cd C:\Users\Hp\Desktop\git-hub\aapat-setu
-   run.bat
+   cd backend
+   pip install -r requirements.txt
    ```
-5. Open browser → **Ctrl+Shift+R** (hard refresh).
+3. (Optional) Edit `backend/.env` and uncomment + fill the SMTP block to
+   receive email alerts.
+4. Start XAMPP (Apache + MySQL), then run `run.bat` (or `run.sh`).
+5. Demo accounts: phone `9800000001` citizen, `...02/...03` volunteer,
+   `...04` responder, `...05` admin, `...10` hospital, `...11` police,
+   `...12` fire, `...13` NGO, `...14` municipality — all passwords `demo1234`.
 
-## API key reminder
+## 10. Build status
 
-Paste your OpenRouteService key in `frontend/src/lib/mapConfig.js` line 24:
-```js
-export const ORS_API_KEY = ''  // <-- paste here
-```
-Without it the map still shows teardrop pins / dark-light tiles / POI pins /
-GPS dot / loading spinner — only the blue driving route + ETA badge is disabled
-(you'll see a hint banner instead).
+`npm run build` completes cleanly (✓ built in ~1.5s) with zero warnings
+or errors. All routes, maps, notifications, i18n (EN/ने), dark/light
+mode, WebSocket toasts, routing, and skeletons are functional.

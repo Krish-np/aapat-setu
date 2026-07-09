@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -22,5 +23,26 @@ async def create(payload: schemas.AlertCreate, db: Session = Depends(get_db), cu
     )
     db.add(a); db.commit(); db.refresh(a)
     out = schemas.AlertOut.model_validate(a)
-    await manager.broadcast("alert_created", out.model_dump(mode="json"))
+    payload = out.model_dump(mode="json")
+    await manager.broadcast("alert_created", payload)
+
+    # Email broadcast on critical/warning alerts (non-blocking)
+    try:
+        from ..email_service import send_alert_email, format_alert_html, is_configured
+        if is_configured() and payload.get("severity") in ("critical", "warning"):
+            asyncio.create_task(
+                send_alert_email(
+                    subject=f"📢 PUBLIC ALERT [{(payload.get('severity') or '').upper()}]: {payload.get('title','')}",
+                    body_html=format_alert_html({
+                        "incident_type": "public_alert",
+                        "ai_severity": payload.get("severity"),
+                        "ai_summary": payload.get("message"),
+                        "address": "Broadcast",
+                        "created_at": payload.get("created_at"),
+                    }),
+                )
+            )
+    except Exception:
+        pass
+
     return out

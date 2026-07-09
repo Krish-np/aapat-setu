@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import clsx from 'clsx'
 
 /* =========================================================
@@ -15,32 +16,45 @@ export const Card = ({
   hover = false,
   padded = true,
   onClick,
+  as: Tag = onClick ? 'button' : 'div',
   ...rest
-}) => (
-  <div
-    onClick={onClick}
-    role={onClick ? 'button' : undefined}
-    tabIndex={onClick ? 0 : undefined}
-    onKeyDown={(e) => {
-      if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-        e.preventDefault()
-        onClick(e)
-      }
-    }}
-    className={clsx(
-      'relative bg-white/90 dark:bg-ink-900/80 backdrop-blur-xl',
-      'border border-ink-200/70 dark:border-ink-800/80',
-      'rounded-2xl shadow-sm shadow-ink-900/[0.04] transition-all duration-200',
-      padded && 'p-5 md:p-6',
-      hover &&
-        'hover:shadow-lg hover:shadow-ink-900/[0.08] hover:-translate-y-0.5 hover:border-brand-300/60 dark:hover:border-brand-600/50 cursor-pointer',
-      className,
-    )}
-    {...rest}
-  >
-    {children}
-  </div>
-)
+}) => {
+  const baseCls = clsx(
+    'relative bg-white/90 dark:bg-ink-900/80 backdrop-blur-xl text-left',
+    'border border-ink-200/70 dark:border-ink-800/80',
+    'rounded-2xl shadow-sm shadow-ink-900/[0.04] transition-all duration-200',
+    padded && 'p-5 md:p-6',
+    hover &&
+      'hover:shadow-lg hover:shadow-ink-900/[0.08] hover:-translate-y-0.5 hover:border-brand-300/60 dark:hover:border-brand-600/50 cursor-pointer',
+    onClick && 'cursor-pointer',
+    className,
+  )
+  if (onClick) {
+    return (
+      <motion.div
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type:'spring', stiffness:400, damping:25 }}
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault()
+            onClick(e)
+          }
+        }}
+        className={baseCls}
+        {...rest}
+      >
+        {children}
+      </motion.div>
+    )
+  }
+  return (
+    <div className={baseCls} {...rest}>{children}</div>
+  )
+}
 
 // ---------- Glass Card ----------
 export const GlassCard = ({ children, className = '', ...rest }) => (

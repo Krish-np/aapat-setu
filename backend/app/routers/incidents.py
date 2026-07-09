@@ -1,3 +1,4 @@
+import asyncio
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -101,7 +102,22 @@ async def create_incident(payload: schemas.IncidentCreate, db: Session = Depends
         db.add(models.Task(incident_id=inc.id, task_type=ttype, assignee_role=role, status=models.TaskStatus.pending))
     db.commit(); db.refresh(inc)
     out = _to_out(inc, db)
-    await manager.broadcast("incident_created", out.model_dump(mode="json"))
+    payload = out.model_dump(mode="json")
+    await manager.broadcast("incident_created", payload)
+
+    # Email alert for critical/high severity incidents (non-blocking)
+    from ..email_service import send_alert_email, format_alert_html, is_configured
+    if is_configured() and (ai.get("ai_severity") in ("critical", "high")):
+        try:
+            asyncio.create_task(
+                send_alert_email(
+                    subject=f"🚨 [{(ai.get('ai_severity') or '').upper()}] {inc.incident_type.replace('_',' ').title()}",
+                    body_html=format_alert_html(payload),
+                )
+            )
+        except Exception:
+            pass
+
     return out
 
 
