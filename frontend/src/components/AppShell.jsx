@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Sidebar from './Sidebar'
-import { IconButton } from './ui'
-import { Menu, X } from 'lucide-react'
-import Navbar from './Navbar'
-import { useAuth } from '../store/auth'
-import { useTranslation } from 'react-i18next'
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Sidebar from "./Sidebar";
+import { IconButton } from "./ui";
+import { Menu, X } from "lucide-react";
+import Navbar from "./Navbar";
+import { useAuth } from "../store/auth";
+import { useTranslation } from "react-i18next";
 
 export default function AppShell({ children }) {
-  const { user } = useAuth()
-  const { t } = useTranslation()
-  const [collapsed, setCollapsed] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const { user } = useAuth();
+  const { t } = useTranslation();
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (!user) {
     return (
@@ -25,7 +25,7 @@ export default function AppShell({ children }) {
           {children}
         </motion.main>
       </div>
-    )
+    );
   }
 
   return (
@@ -65,13 +65,13 @@ export default function AppShell({ children }) {
           animate={{ opacity: 1, x: 0 }}
           className="font-extrabold tracking-tight truncate"
         >
-          {t('brand')}
+          {t("brand")}
         </motion.div>
       </div>
 
       <div className="flex-1 min-w-0">
         <motion.main
-          key={typeof window !== 'undefined' ? window.location.pathname : 'app'}
+          key={typeof window !== "undefined" ? window.location.pathname : "app"}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
@@ -82,5 +82,5 @@ export default function AppShell({ children }) {
         </motion.main>
       </div>
     </div>
-  )
+  );
 }
