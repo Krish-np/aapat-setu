@@ -4,6 +4,7 @@ import { Card, Button, Input, Textarea, Select } from '../components/ui'
 import { useAuth } from '../store/auth'
 import { toast } from '../components/toaster'
 import { timeAgo } from '../lib/helpers'
+import BackButton from '../components/BackButton'
 import { Radio, Send, Megaphone } from 'lucide-react'
 
 export default function Alerts() {
@@ -25,7 +26,8 @@ export default function Alerts() {
   const color = { info:'blue', warning:'amber', critical:'red', success:'green' }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-5">
+    <div className="max-w<BackButton/>
+    -4xl mx-auto p-4 md:p-6 space-y-5">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><Radio className="text-amber-500"/> Public Alerts</h1>
         <p className="text-ink-500 text-sm mt-1">Safety broadcasts from emergency agencies</p>

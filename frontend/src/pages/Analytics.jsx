@@ -6,6 +6,8 @@ import {
   Legend,
 } from 'recharts'
 
+import BackButton from '../components/BackButton'
+
 const COLORS = ['#ef4444','#f59e0b','#3b82f6','#10b981','#a855f7','#ec4899','#14b8a6','#f97316','#6366f1']
 
 export default function Analytics() {
@@ -23,7 +25,8 @@ export default function Analytics() {
   const statusData = Object.entries(stats.by_status||{}).map(([k,v])=>({name:k.replace('_',' '), value:v}))
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
+    <div className="max-w<BackButton/>
+    -7xl mx-auto p-4 md:p-6 space-y-5">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold">📊 Intelligence Analytics</h1>
         <p className="text-ink-500 text-sm mt-1">Real-time emergency intelligence for decision makers</p>

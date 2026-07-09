@@ -6,6 +6,7 @@ import { useAuth } from '../store/auth'
 import { toast } from '../components/toaster'
 import { timeAgo, haversine } from '../lib/helpers'
 import { Navigate } from 'react-router-dom'
+import BackButton from '../components/BackButton'
 import { HandHeart, MapPin, CheckCircle2, Clock } from 'lucide-react'
 
 const TASK_STATUSES = ['pending','claimed','en_route','on_site','in_progress','completed']
@@ -31,7 +32,8 @@ export default function Tasks() {
   const update = async (id, status) => { await api.patch(`/api/tasks/${id}`, { status }); toast(`Marked ${status}`,'ok'); load() }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
+    <div className="max-w<BackButton/>
+    -7xl mx-auto p-4 md:p-6 space-y-5">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><HandHeart className="text-emerald-500"/> Task Board</h1>
         <p className="text-ink-500 text-sm mt-1">Browse and accept rescue missions near you</p>

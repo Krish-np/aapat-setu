@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import api from "../lib/api";
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import api from '../lib/api'
 import {
   Card,
   StatCard,
@@ -11,10 +11,10 @@ import {
   priorityBadge,
   statusBadge,
   EmptyState,
-} from "../components/ui";
-import Map from "../components/Map";
-import { useAuth } from "../store/auth";
-import { timeAgo } from "../lib/helpers";
+} from '../components/ui'
+import Map from '../components/Map'
+import { useAuth } from '../store/auth'
+import { timeAgo } from '../lib/helpers'
 import {
   AlertTriangle,
   Clock,
@@ -24,80 +24,46 @@ import {
   Shield,
   BarChart3,
   MapPin,
-} from "lucide-react";
+} from 'lucide-react'
 
 const QUICK_ACTIONS = [
-  {
-    icon: AlertTriangle,
-    label: "Report Emergency",
-    to: "/app/report",
-    color: "red",
-  },
-  { icon: MapPin, label: "Live Map", to: "/app/map", color: "blue" },
-  {
-    icon: Users,
-    label: "Tasks",
-    to: "/app/tasks",
-    color: "green",
-    roles: ["volunteer", "responder", "admin"],
-  },
-  { icon: Radio, label: "Alerts", to: "/app/alerts", color: "amber" },
-  {
-    icon: BarChart3,
-    label: "Analytics",
-    to: "/app/analytics",
-    color: "purple",
-    roles: ["responder", "municipality", "admin"],
-  },
-  {
-    icon: Clock,
-    label: "My Reports",
-    to: "/app/map",
-    color: "indigo",
-    roles: ["citizen"],
-  },
-];
+  { icon: AlertTriangle, label: 'Report Emergency', to: '/app/report', color: 'red' },
+  { icon: MapPin, label: 'Live Map', to: '/app/map', color: 'blue' },
+  { icon: Users, label: 'Tasks', to: '/app/tasks', color: 'green', roles: ['volunteer', 'responder', 'admin'] },
+  { icon: Radio, label: 'Alerts', to: '/app/alerts', color: 'amber' },
+  { icon: BarChart3, label: 'Analytics', to: '/app/analytics', color: 'purple', roles: ['responder', 'municipality', 'admin'] },
+  { icon: Clock, label: 'My Reports', to: '/app/map', color: 'indigo', roles: ['citizen'] },
+]
 
 const ACTION_COLORS = {
-  red: "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 ring-red-100 dark:ring-red-500/20",
-  blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 ring-blue-100 dark:ring-blue-500/20",
-  green:
-    "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 ring-emerald-100 dark:ring-emerald-500/20",
-  amber:
-    "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 ring-amber-100 dark:ring-amber-500/20",
-  purple:
-    "bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400 ring-purple-100 dark:ring-purple-500/20",
-  indigo:
-    "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 ring-indigo-100 dark:ring-indigo-500/20",
-};
+  red:    'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 ring-red-100 dark:ring-red-500/20',
+  blue:   'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 ring-blue-100 dark:ring-blue-500/20',
+  green:  'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 ring-emerald-100 dark:ring-emerald-500/20',
+  amber:  'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 ring-amber-100 dark:ring-amber-500/20',
+  purple: 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400 ring-purple-100 dark:ring-purple-500/20',
+  indigo: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 ring-indigo-100 dark:ring-indigo-500/20',
+}
 
 function QuickAction({ icon: Icon, label, to, color }) {
   return (
     <Link to={to}>
       <Card hover className="h-full">
-        <div
-          className={`w-11 h-11 rounded-xl grid place-items-center mb-3 ring-1 ring-inset ${ACTION_COLORS[color]}`}
-        >
+        <div className={`w-11 h-11 rounded-xl grid place-items-center mb-3 ring-1 ring-inset ${ACTION_COLORS[color]}`}>
           <Icon size={20} />
         </div>
-        <div className="font-semibold text-sm text-ink-900 dark:text-white">
-          {label}
-        </div>
+        <div className="font-semibold text-sm text-ink-900 dark:text-white">{label}</div>
       </Card>
     </Link>
-  );
+  )
 }
 
 function Legend({ color, label }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-ink-500 dark:text-ink-400">
-      <span
-        className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-ink-900"
-        style={{ background: color }}
-      />
+      <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-ink-900" style={{ background: color }} />
       {label}
     </span>
-  );
+  )
 }
 
 function HomeSkeleton() {
@@ -111,9 +77,7 @@ function HomeSkeleton() {
         <Skeleton className="h-11 w-40 rounded-xl" />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <StatCard key={i} loading label="" value="" />
-        ))}
+        {Array.from({ length: 4 }).map((_, i) => <StatCard key={i} loading label="" value="" />)}
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -148,73 +112,66 @@ function HomeSkeleton() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
 
 export default function AppHome() {
-  const { t } = useTranslation();
-  const { user } = useAuth();
-  const [incidents, setIncidents] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [pois, setPois] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
+  const { t } = useTranslation()
+  const { user } = useAuth()
+  const [incidents, setIncidents] = useState([])
+  const [stats, setStats] = useState(null)
+  const [pois, setPois] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState(null)
 
   useEffect(() => {
-    let active = true;
+    let active = true
     Promise.all([
-      api.get("/api/incidents"),
-      api.get("/api/incidents/stats/summary"),
-      api.get("/api/incidents/pois/all"),
+      api.get('/api/incidents'),
+      api.get('/api/incidents/stats/summary'),
+      api.get('/api/incidents/pois/all'),
     ])
       .then(([i, s, p]) => {
-        if (!active) return;
-        setIncidents(i.data);
-        setStats(s.data);
-        setPois(p.data);
+        if (!active) return
+        setIncidents(i.data)
+        setStats(s.data)
+        setPois(p.data)
       })
-      .catch((e) => setErr(e.message || "Failed to load dashboard"))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, []);
+      .catch((e) => setErr(e.message || 'Failed to load dashboard'))
+      .finally(() => active && setLoading(false))
+    return () => { active = false }
+  }, [])
 
-  if (loading) return <HomeSkeleton />;
+  if (loading) return <HomeSkeleton />
 
   const critical = incidents.filter(
-    (i) => i.ai_severity === "critical" && i.status !== "resolved",
-  );
-  const active = incidents.filter(
-    (i) => !["resolved", "rejected"].includes(i.status),
-  );
-  const mine = incidents.filter((i) => i.reporter_id === user.id);
+    (i) => i.ai_severity === 'critical' && i.status !== 'resolved',
+  )
+  const active = incidents.filter((i) => !['resolved', 'rejected'].includes(i.status))
+  const mine = incidents.filter((i) => i.reporter_id === user.id)
 
   const roleWelcome = {
     citizen: "Here's your safety overview",
-    volunteer: "Thank you for helping — missions near you",
-    responder: "Command center online — stay alert for new incidents",
-    hospital: "Emergency coordination for your facility",
-    police: "Police command overview",
-    fire: "Fire brigade dispatch overview",
-    ngo: "Relief coordination center",
-    municipality: "City-wide emergency status",
-    admin: "System administration",
-  }[user.role];
+    volunteer: 'Thank you for helping — missions near you',
+    responder: 'Command center online — stay alert for new incidents',
+    hospital: 'Emergency coordination for your facility',
+    police: 'Police command overview',
+    fire: 'Fire brigade dispatch overview',
+    ngo: 'Relief coordination center',
+    municipality: 'City-wide emergency status',
+    admin: 'System administration',
+  }[user.role]
 
   const actions = QUICK_ACTIONS.filter(
     (a) => !a.roles || a.roles.includes(user.role),
-  );
+  )
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 fade-in">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">
-            Namaste, {user.name.split(" ")[0]}{" "}
-            <span role="img" aria-label="namaste">
-              🙏
-            </span>
+            Namaste, {user.name.split(' ')[0]} <span role="img" aria-label="namaste">🙏</span>
           </h1>
           <p className="text-ink-500 dark:text-ink-400 text-sm mt-1 flex items-center gap-3">
             <span className="inline-flex items-center gap-2">
@@ -225,7 +182,7 @@ export default function AppHome() {
         </div>
         <Link to="/app/report">
           <Button size="lg">
-            <AlertTriangle size={18} /> {t("hero.cta_report")}
+            <AlertTriangle size={18} /> {t('hero.cta_report')}
           </Button>
         </Link>
       </div>
@@ -244,14 +201,13 @@ export default function AppHome() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-bold text-red-700 dark:text-red-300">
-                {critical.length} critical incident
-                {critical.length > 1 ? "s" : ""} require immediate attention
+                {critical.length} critical incident{critical.length > 1 ? 's' : ''} require immediate attention
               </div>
               <p className="text-sm text-ink-600 dark:text-ink-300 mt-1 line-clamp-2">
                 {critical
                   .slice(0, 2)
                   .map((c) => c.ai_summary)
-                  .join(" · ")}
+                  .join(' · ')}
               </p>
             </div>
           </div>
@@ -259,34 +215,10 @@ export default function AppHome() {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          label="Active"
-          value={active.length}
-          color="orange"
-          sub="In progress"
-          icon={<Activity size={18} />}
-        />
-        <StatCard
-          label="Critical"
-          value={critical.length}
-          color="red"
-          sub="Need attention now"
-          icon={<AlertTriangle size={18} />}
-        />
-        <StatCard
-          label="Resolved"
-          value={stats?.by_status?.resolved || 0}
-          color="green"
-          sub="Completed"
-          icon={<Shield size={18} />}
-        />
-        <StatCard
-          label="Total"
-          value={stats?.total || 0}
-          color="blue"
-          sub="All incidents"
-          icon={<Radio size={18} />}
-        />
+        <StatCard label="Active" value={active.length} color="orange" sub="In progress" icon={<Activity size={18} />} />
+        <StatCard label="Critical" value={critical.length} color="red" sub="Need attention now" icon={<AlertTriangle size={18} />} />
+        <StatCard label="Resolved" value={stats?.by_status?.resolved || 0} color="green" sub="Completed" icon={<Shield size={18} />} />
+        <StatCard label="Total" value={stats?.total || 0} color="blue" sub="All incidents" icon={<Radio size={18} />} />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -308,13 +240,7 @@ export default function AppHome() {
               Fullscreen →
             </Link>
           </div>
-          <Map
-            incidents={active}
-            pois={pois}
-            height={500}
-            zoom={13}
-            selectable
-          />
+          <Map incidents={active} pois={pois} height={500} zoom={13} selectable />
           <div className="px-5 py-3 border-t border-ink-200/60 dark:border-ink-800 flex gap-4 flex-wrap text-xs">
             <Legend color="#dc2626" label="Critical" />
             <Legend color="#ea580c" label="High" />
@@ -339,8 +265,8 @@ export default function AppHome() {
           ) : (
             <div className="space-y-2 max-h-[540px] overflow-y-auto pr-1 -mr-1">
               {incidents.slice(0, 8).map((inc) => {
-                const pb = priorityBadge(inc.ai_severity || inc.severity);
-                const sb = statusBadge(inc.status);
+                const pb = priorityBadge(inc.ai_severity || inc.severity)
+                const sb = statusBadge(inc.status)
                 return (
                   <Link
                     key={inc.id}
@@ -350,7 +276,7 @@ export default function AppHome() {
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <strong className="capitalize text-sm text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                          {inc.incident_type?.replaceAll("_", " ")}
+                          {inc.incident_type?.replaceAll('_', ' ')}
                         </strong>
                         <Badge color={pb.color}>{pb.label}</Badge>
                       </div>
@@ -365,12 +291,12 @@ export default function AppHome() {
                       {sb.label}
                     </Badge>
                   </Link>
-                );
+                )
               })}
             </div>
           )}
         </Card>
       </div>
     </div>
-  );
+  )
 }

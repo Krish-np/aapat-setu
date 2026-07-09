@@ -9,13 +9,15 @@ from ..security import get_current_user
 router = APIRouter(prefix="/api/resources", tags=["resources"])
 
 
+from typing import Optional
+
 class ResourceIn(BaseModel):
-    resource_type: str
-    name: str = None
-    quantity: int = 1
-    lat: float = None
-    lng: float = None
-    available: bool = True
+    resource_type: Optional[str] = None
+    name: Optional[str] = None
+    quantity: Optional[int] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    available: Optional[bool] = None
 
 
 @router.get("")
@@ -25,10 +27,41 @@ def list_all(db: Session = Depends(get_db), current: models.User = Depends(get_c
 
 @router.post("")
 def create(payload: ResourceIn, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
-    r = models.Resource(owner_id=current.id, resource_type=payload.resource_type, name=payload.name,
-                        quantity=payload.quantity, available=payload.available,
-                        lat=payload.lat or current.lat, lng=payload.lng or current.lng)
+    if not payload.resource_type:
+        from fastapi import HTTPException
+        raise HTTPException(400, "resource_type is required")
+    r = models.Resource(
+        owner_id=current.id,
+        resource_type=payload.resource_type,
+        name=payload.name,
+        quantity=payload.quantity if payload.quantity is not None else 1,
+        available=payload.available if payload.available is not None else True,
+        lat=payload.lat or current.lat,
+        lng=payload.lng or current.lng,
+    )
     db.add(r); db.commit(); db.refresh(r)
+    return r
+
+
+@router.delete("/{resource_id}")
+def delete(resource_id: int, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
+    r = db.query(models.Resource).filter(models.Resource.id == resource_id).first()
+    if not r:
+        from fastapi import HTTPException
+        raise HTTPException(404, "Not found")
+    db.delete(r); db.commit()
+    return {"ok": True}
+
+
+@router.patch("/{resource_id}")
+def update(resource_id: int, payload: ResourceIn, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
+    r = db.query(models.Resource).filter(models.Resource.id == resource_id).first()
+    if not r:
+        from fastapi import HTTPException
+        raise HTTPException(404, "Not found")
+    for k, v in payload.model_dump(exclude_unset=True).items():
+        setattr(r, k, v)
+    db.commit(); db.refresh(r)
     return r
 
 

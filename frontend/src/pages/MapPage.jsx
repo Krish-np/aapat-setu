@@ -4,6 +4,7 @@ import api from '../lib/api'
 import { Card, Badge, Button, priorityBadge, statusBadge } from '../components/ui'
 import Map from '../components/Map'
 import { timeAgo } from '../lib/helpers'
+import BackButton from '../components/BackButton'
 import { Layers, List, AlertTriangle } from 'lucide-react'
 
 export default function MapPage() {
@@ -18,7 +19,8 @@ export default function MapPage() {
   },[])
   const filtered = incs.filter(i => filter==='all'?true:filter==='active'?i.status!=='resolved':i.status===filter)
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-4">
+    <div className="max-w<BackButton/>
+    -7xl mx-auto p-4 md:p-6 space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><Layers className="text-blue-600"/> Live Emergency Map</h1>

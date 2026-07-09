@@ -1,5 +1,5 @@
-import React from "react";
-import clsx from "clsx";
+import React from 'react'
+import clsx from 'clsx'
 
 /* =========================================================
    Phoenix-inspired UI primitives for Aapat Setu
@@ -11,7 +11,7 @@ import clsx from "clsx";
 // ---------- Card ----------
 export const Card = ({
   children,
-  className = "",
+  className = '',
   hover = false,
   padded = true,
   onClick,
@@ -19,130 +19,122 @@ export const Card = ({
 }) => (
   <div
     onClick={onClick}
-    role={onClick ? "button" : undefined}
+    role={onClick ? 'button' : undefined}
     tabIndex={onClick ? 0 : undefined}
     onKeyDown={(e) => {
-      if (onClick && (e.key === "Enter" || e.key === " ")) {
-        e.preventDefault();
-        onClick(e);
+      if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault()
+        onClick(e)
       }
     }}
     className={clsx(
-      "relative bg-white/90 dark:bg-ink-900/80 backdrop-blur-xl",
-      "border border-ink-200/70 dark:border-ink-800/80",
-      "rounded-2xl shadow-sm shadow-ink-900/[0.04] transition-all duration-200",
-      padded && "p-5 md:p-6",
+      'relative bg-white/90 dark:bg-ink-900/80 backdrop-blur-xl',
+      'border border-ink-200/70 dark:border-ink-800/80',
+      'rounded-2xl shadow-sm shadow-ink-900/[0.04] transition-all duration-200',
+      padded && 'p-5 md:p-6',
       hover &&
-        "hover:shadow-lg hover:shadow-ink-900/[0.08] hover:-translate-y-0.5 hover:border-brand-300/60 dark:hover:border-brand-600/50 cursor-pointer",
+        'hover:shadow-lg hover:shadow-ink-900/[0.08] hover:-translate-y-0.5 hover:border-brand-300/60 dark:hover:border-brand-600/50 cursor-pointer',
       className,
     )}
     {...rest}
   >
     {children}
   </div>
-);
+)
 
 // ---------- Glass Card ----------
-export const GlassCard = ({ children, className = "", ...rest }) => (
+export const GlassCard = ({ children, className = '', ...rest }) => (
   <div
     className={clsx(
-      "rounded-2xl p-5 md:p-6",
-      "bg-white/65 dark:bg-ink-900/60",
-      "backdrop-blur-2xl saturate-150",
-      "border border-white/60 dark:border-white/10",
-      "shadow-[0_8px_32px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)]",
+      'rounded-2xl p-5 md:p-6',
+      'bg-white/65 dark:bg-ink-900/60',
+      'backdrop-blur-2xl saturate-150',
+      'border border-white/60 dark:border-white/10',
+      'shadow-[0_8px_32px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)]',
       className,
     )}
     {...rest}
   >
     {children}
   </div>
-);
+)
 
 // ---------- Button ----------
 export const Button = ({
   children,
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   loading = false,
-  className = "",
+  className = '',
   disabled,
   ...rest
 }) => {
   const sizes = {
-    xs: "h-7 px-2.5 text-xs rounded-lg gap-1",
-    sm: "h-9 px-3.5 text-sm rounded-lg gap-1.5",
-    md: "h-10 px-4 text-sm rounded-xl gap-2",
-    lg: "h-12 px-6 text-base rounded-xl gap-2",
-    icon: "h-10 w-10 rounded-xl grid place-items-center",
-    iconSm: "h-9 w-9 rounded-lg grid place-items-center",
-  };
+    xs: 'h-7 px-2.5 text-xs rounded-lg gap-1',
+    sm: 'h-9 px-3.5 text-sm rounded-lg gap-1.5',
+    md: 'h-10 px-4 text-sm rounded-xl gap-2',
+    lg: 'h-12 px-6 text-base rounded-xl gap-2',
+    icon: 'h-10 w-10 rounded-xl grid place-items-center',
+    iconSm: 'h-9 w-9 rounded-lg grid place-items-center',
+  }
   const variants = {
     primary:
-      "bg-gradient-to-b from-brand-500 to-brand-600 hover:from-brand-500 hover:to-brand-700 text-white shadow-md shadow-brand-600/25 ring-1 ring-inset ring-brand-400/30 active:shadow-sm",
+      'bg-gradient-to-b from-brand-500 to-brand-600 hover:from-brand-500 hover:to-brand-700 text-white shadow-md shadow-brand-600/25 ring-1 ring-inset ring-brand-400/30 active:shadow-sm',
     secondary:
-      "bg-ink-100 hover:bg-ink-200 text-ink-800 dark:bg-ink-800 dark:hover:bg-ink-700 dark:text-white ring-1 ring-inset ring-ink-200 dark:ring-ink-700",
+      'bg-ink-100 hover:bg-ink-200 text-ink-800 dark:bg-ink-800 dark:hover:bg-ink-700 dark:text-white ring-1 ring-inset ring-ink-200 dark:ring-ink-700',
     ghost:
-      "border border-ink-200 dark:border-ink-700 bg-transparent hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200",
+      'border border-ink-200 dark:border-ink-700 bg-transparent hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200',
     subtle:
-      "bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/20",
+      'bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/20',
     danger:
-      "bg-gradient-to-b from-red-500 to-red-600 hover:to-red-700 text-white shadow-md shadow-red-600/25 ring-1 ring-inset ring-red-400/30",
+      'bg-gradient-to-b from-red-500 to-red-600 hover:to-red-700 text-white shadow-md shadow-red-600/25 ring-1 ring-inset ring-red-400/30',
     success:
-      "bg-gradient-to-b from-emerald-500 to-emerald-600 hover:to-emerald-700 text-white shadow-md shadow-emerald-600/25 ring-1 ring-inset ring-emerald-400/30",
+      'bg-gradient-to-b from-emerald-500 to-emerald-600 hover:to-emerald-700 text-white shadow-md shadow-emerald-600/25 ring-1 ring-inset ring-emerald-400/30',
     warning:
-      "bg-gradient-to-b from-amber-400 to-amber-500 hover:to-amber-600 text-amber-950 shadow-md shadow-amber-500/25 ring-1 ring-inset ring-amber-300/40",
+      'bg-gradient-to-b from-amber-400 to-amber-500 hover:to-amber-600 text-amber-950 shadow-md shadow-amber-500/25 ring-1 ring-inset ring-amber-300/40',
     outline:
-      "border border-brand-500/60 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 bg-transparent",
-  };
+      'border border-brand-500/60 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 bg-transparent',
+  }
   return (
     <button
       disabled={disabled || loading}
       className={clsx(
-        "inline-flex items-center justify-center font-semibold select-none",
-        "transition-all duration-150 active:scale-[0.98]",
-        "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-ink-900",
+        'inline-flex items-center justify-center font-semibold select-none',
+        'transition-all duration-150 active:scale-[0.98]',
+        'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-ink-900',
         sizes[size],
         variants[variant],
         className,
       )}
       {...rest}
     >
-      {loading && (
-        <Spinner size={14} className="!border-white/30 !border-t-white" />
-      )}
+      {loading && <Spinner size={14} className="!border-white/30 !border-t-white" />}
       {children}
     </button>
-  );
-};
+  )
+}
 
 // ---------- Icon Button ----------
-export const IconButton = ({
-  children,
-  className = "",
-  active = false,
-  ...rest
-}) => (
+export const IconButton = ({ children, className = '', active = false, ...rest }) => (
   <button
     className={clsx(
-      "h-10 w-10 rounded-xl grid place-items-center transition-colors",
-      "text-ink-600 dark:text-ink-300",
-      "hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-900 dark:hover:text-white",
-      active &&
-        "bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400",
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60",
+      'h-10 w-10 rounded-xl grid place-items-center transition-colors',
+      'text-ink-600 dark:text-ink-300',
+      'hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-900 dark:hover:text-white',
+      active && 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400',
+      'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60',
       className,
     )}
     {...rest}
   >
     {children}
   </button>
-);
+)
 
 // ---------- Input ----------
 export const Input = React.forwardRef(function Input(
-  { className = "", icon, ...props },
+  { className = '', icon, ...props },
   ref,
 ) {
   return (
@@ -156,23 +148,23 @@ export const Input = React.forwardRef(function Input(
         ref={ref}
         {...props}
         className={clsx(
-          "w-full bg-white dark:bg-ink-900/70",
-          "border border-ink-200 dark:border-ink-700",
-          "rounded-xl px-4 py-2.5 text-sm",
-          "placeholder:text-ink-400 text-ink-900 dark:text-white",
-          "outline-none transition-all duration-150",
-          "focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10",
-          icon && "pl-10",
+          'w-full bg-white dark:bg-ink-900/70',
+          'border border-ink-200 dark:border-ink-700',
+          'rounded-xl px-4 py-2.5 text-sm',
+          'placeholder:text-ink-400 text-ink-900 dark:text-white',
+          'outline-none transition-all duration-150',
+          'focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10',
+          icon && 'pl-10',
           className,
         )}
       />
     </div>
-  );
-});
+  )
+})
 
 // ---------- Select ----------
 export const Select = React.forwardRef(function Select(
-  { className = "", ...props },
+  { className = '', ...props },
   ref,
 ) {
   return (
@@ -180,20 +172,20 @@ export const Select = React.forwardRef(function Select(
       ref={ref}
       {...props}
       className={clsx(
-        "w-full bg-white dark:bg-ink-900/70 border border-ink-200 dark:border-ink-700",
-        "rounded-xl px-4 py-2.5 text-sm outline-none transition-colors appearance-none",
-        "focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10",
-        "bg-no-repeat bg-[right_0.75rem_center] pr-9",
+        'w-full bg-white dark:bg-ink-900/70 border border-ink-200 dark:border-ink-700',
+        'rounded-xl px-4 py-2.5 text-sm outline-none transition-colors appearance-none',
+        'focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10',
+        'bg-no-repeat bg-[right_0.75rem_center] pr-9',
         "[background-image:url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")]",
         className,
       )}
     />
-  );
-});
+  )
+})
 
 // ---------- Textarea ----------
 export const Textarea = React.forwardRef(function Textarea(
-  { className = "", ...props },
+  { className = '', ...props },
   ref,
 ) {
   return (
@@ -201,91 +193,83 @@ export const Textarea = React.forwardRef(function Textarea(
       ref={ref}
       {...props}
       className={clsx(
-        "w-full bg-white dark:bg-ink-900/70 border border-ink-200 dark:border-ink-700",
-        "rounded-xl px-4 py-3 text-sm outline-none transition-colors resize-y",
-        "placeholder:text-ink-400",
-        "focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10",
+        'w-full bg-white dark:bg-ink-900/70 border border-ink-200 dark:border-ink-700',
+        'rounded-xl px-4 py-3 text-sm outline-none transition-colors resize-y',
+        'placeholder:text-ink-400',
+        'focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10',
         className,
       )}
     />
-  );
-});
+  )
+})
 
 // ---------- Badge ----------
-export const Badge = ({
-  children,
-  color = "slate",
-  className = "",
-  pulse,
-  dot,
-}) => {
+export const Badge = ({ children, color = 'slate', className = '', pulse, dot }) => {
   const colors = {
     slate:
-      "bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300 ring-1 ring-inset ring-ink-200 dark:ring-ink-700",
-    red: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300 ring-1 ring-inset ring-red-200 dark:ring-red-500/20",
+      'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300 ring-1 ring-inset ring-ink-200 dark:ring-ink-700',
+    red: 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300 ring-1 ring-inset ring-red-200 dark:ring-red-500/20',
     orange:
-      "bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-200 dark:ring-orange-500/20",
+      'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-200 dark:ring-orange-500/20',
     amber:
-      "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-200 dark:ring-amber-500/20",
+      'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-200 dark:ring-amber-500/20',
     yellow:
-      "bg-yellow-50 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-300 ring-1 ring-inset ring-yellow-200 dark:ring-yellow-500/20",
+      'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-300 ring-1 ring-inset ring-yellow-200 dark:ring-yellow-500/20',
     green:
-      "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-500/20",
-    blue: "bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-200 dark:ring-blue-500/20",
+      'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-500/20',
+    blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-200 dark:ring-blue-500/20',
     indigo:
-      "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-200 dark:ring-indigo-500/20",
+      'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-200 dark:ring-indigo-500/20',
     purple:
-      "bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-200 dark:ring-purple-500/20",
-    pink: "bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-200 dark:ring-pink-500/20",
+      'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-200 dark:ring-purple-500/20',
+    pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-200 dark:ring-pink-500/20',
     brand:
-      "bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300 ring-1 ring-inset ring-brand-200 dark:ring-brand-500/20",
-  };
+      'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300 ring-1 ring-inset ring-brand-200 dark:ring-brand-500/20',
+  }
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold tracking-wide",
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold tracking-wide',
         colors[color],
         className,
       )}
     >
-      {pulse && (
-        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-slow" />
-      )}
+      {pulse && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse-slow" />}
       {dot && <span className="w-1.5 h-1.5 rounded-full bg-current" />}
       {children}
     </span>
-  );
-};
+  )
+}
 
 // ---------- Helpers for priority/status ----------
 export const priorityBadge = (p) =>
   ({
-    critical: { label: "Critical", color: "red" },
-    high: { label: "High", color: "orange" },
-    moderate: { label: "Moderate", color: "amber" },
-    low: { label: "Low", color: "green" },
-  })[p] || { label: p || "Unknown", color: "slate" };
+    critical: { label: 'Critical', color: 'red' },
+    high: { label: 'High', color: 'orange' },
+    moderate: { label: 'Moderate', color: 'amber' },
+    low: { label: 'Low', color: 'green' },
+  }[p] || { label: p || 'Unknown', color: 'slate' })
 
 export const statusBadge = (s) =>
   ({
-    submitted: { label: "Submitted", color: "slate" },
-    ai_processing: { label: "AI Processing", color: "purple" },
-    verified: { label: "Verified", color: "blue" },
-    assigned: { label: "Assigned", color: "indigo" },
-    dispatched: { label: "Dispatched", color: "purple" },
-    en_route: { label: "En Route", color: "amber" },
-    on_site: { label: "On Scene", color: "orange" },
-    rescue_ongoing: { label: "Rescue Ongoing", color: "orange" },
-    resolved: { label: "Resolved", color: "green" },
-    rejected: { label: "Rejected", color: "red" },
-    claimed: { label: "Claimed", color: "blue" },
-  })[s] || { label: s, color: "slate" };
+    submitted: { label: 'Submitted', color: 'slate' },
+    ai_processing: { label: 'AI Processing', color: 'purple' },
+    verified: { label: 'Verified', color: 'blue' },
+    assigned: { label: 'Assigned', color: 'indigo' },
+    dispatched: { label: 'Dispatched', color: 'purple' },
+    en_route: { label: 'En Route', color: 'amber' },
+    on_site: { label: 'On Scene', color: 'orange' },
+    rescue_ongoing: { label: 'Rescue Ongoing', color: 'orange' },
+    resolved: { label: 'Resolved', color: 'green' },
+    rejected: { label: 'Rejected', color: 'red' },
+    claimed: { label: 'Claimed', color: 'blue' },
+  }[s] || { label: s, color: 'slate' })
 
 // ---------- Spinner ----------
-export function Spinner({ size = 20, className = "" }) {
+export function Spinner({ size = 20, className = '' }) {
   return (
     <svg
-      className={clsx("animate-spin", className)}
+      className={clsx('animate-spin', className)}
       width={size}
       height={size}
       viewBox="0 0 24 24"
@@ -307,11 +291,11 @@ export function Spinner({ size = 20, className = "" }) {
         strokeLinecap="round"
       />
     </svg>
-  );
+  )
 }
 
 // A full-area spinner centered (good for page loading)
-export function FullLoader({ label = "Loading…" }) {
+export function FullLoader({ label = 'Loading…' }) {
   return (
     <div className="min-h-[50vh] w-full grid place-items-center">
       <div className="flex flex-col items-center gap-3 text-ink-500 dark:text-ink-400">
@@ -319,37 +303,37 @@ export function FullLoader({ label = "Loading…" }) {
         {label && <div className="text-sm font-medium">{label}</div>}
       </div>
     </div>
-  );
+  )
 }
 
 // Button-like inline loader for submit actions
-export function MiniLoader({ className = "" }) {
+export function MiniLoader({ className = '' }) {
   return (
     <span
       className={clsx(
-        "inline-block h-4 w-4 rounded-full border-2 border-current border-r-transparent animate-spin align-middle",
+        'inline-block h-4 w-4 rounded-full border-2 border-current border-r-transparent animate-spin align-middle',
         className,
       )}
     />
-  );
+  )
 }
 
 // ---------- Skeleton ----------
-export function Skeleton({ className = "", rounded = "md" }) {
+export function Skeleton({ className = '', rounded = 'md' }) {
   return (
     <div
       className={clsx(
-        "relative overflow-hidden bg-ink-100 dark:bg-ink-800",
-        rounded === "full" && "rounded-full",
-        rounded === "lg" && "rounded-lg",
-        rounded === "xl" && "rounded-xl",
-        rounded === "md" && "rounded-md",
-        rounded === "circle" && "rounded-full",
+        'relative overflow-hidden bg-ink-100 dark:bg-ink-800',
+        rounded === 'full' && 'rounded-full',
+        rounded === 'lg' && 'rounded-lg',
+        rounded === 'xl' && 'rounded-xl',
+        rounded === 'md' && 'rounded-md',
+        rounded === 'circle' && 'rounded-full',
         className,
-        "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.6s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/40 dark:before:via-white/10 before:to-transparent",
+        'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.6s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/40 dark:before:via-white/10 before:to-transparent',
       )}
     />
-  );
+  )
 }
 
 // Page-level skeleton grid — good for dashboards/tables/lists
@@ -381,7 +365,7 @@ export function SkeletonPage({ rows = 6, cards = 3 }) {
         </div>
       </Card>
     </div>
-  );
+  )
 }
 
 // Skeleton table
@@ -391,74 +375,60 @@ export function SkeletonTable({ cols = 4, rows = 6 }) {
       <div className="divide-y divide-ink-100 dark:divide-ink-800">
         <div className="flex gap-4 p-4 bg-ink-50/60 dark:bg-ink-900/40">
           {Array.from({ length: cols }).map((_, i) => (
-            <Skeleton
-              key={i}
-              className={`h-3 ${i === 0 ? "w-10" : "flex-1"}`}
-            />
+            <Skeleton key={i} className={`h-3 ${i === 0 ? 'w-10' : 'flex-1'}`} />
           ))}
         </div>
         {Array.from({ length: rows }).map((_, r) => (
           <div key={r} className="flex gap-4 p-4 items-center">
             {Array.from({ length: cols }).map((_, c) => (
-              <Skeleton
-                key={c}
-                className={`h-4 ${c === 0 ? "w-10" : "flex-1"}`}
-              />
+              <Skeleton key={c} className={`h-4 ${c === 0 ? 'w-10' : 'flex-1'}`} />
             ))}
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 // ---------- StatCard ----------
-export const StatCard = ({
-  label,
-  value,
-  sub,
-  color = "brand",
-  icon,
-  trend,
-  loading,
-}) => {
+export const StatCard = ({ label, value, sub, color = 'brand', icon, trend, loading }) => {
   const tones = {
     red: {
-      bg: "bg-red-50 dark:bg-red-500/10",
-      text: "text-red-600 dark:text-red-400",
+      bg: 'bg-red-50 dark:bg-red-500/10',
+      text: 'text-red-600 dark:text-red-400',
     },
     orange: {
-      bg: "bg-orange-50 dark:bg-orange-500/10",
-      text: "text-orange-600 dark:text-orange-400",
+      bg: 'bg-orange-50 dark:bg-orange-500/10',
+      text: 'text-orange-600 dark:text-orange-400',
     },
     amber: {
-      bg: "bg-amber-50 dark:bg-amber-500/10",
-      text: "text-amber-600 dark:text-amber-400",
+      bg: 'bg-amber-50 dark:bg-amber-500/10',
+      text: 'text-amber-600 dark:text-amber-400',
     },
     green: {
-      bg: "bg-emerald-50 dark:bg-emerald-500/10",
-      text: "text-emerald-600 dark:text-emerald-400",
+      bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+      text: 'text-emerald-600 dark:text-emerald-400',
     },
     blue: {
-      bg: "bg-blue-50 dark:bg-blue-500/10",
-      text: "text-blue-600 dark:text-blue-400",
+      bg: 'bg-blue-50 dark:bg-blue-500/10',
+      text: 'text-blue-600 dark:text-blue-400',
     },
     purple: {
-      bg: "bg-purple-50 dark:bg-purple-500/10",
-      text: "text-purple-600 dark:text-purple-400",
+      bg: 'bg-purple-50 dark:bg-purple-500/10',
+      text: 'text-purple-600 dark:text-purple-400',
     },
     brand: {
-      bg: "bg-brand-50 dark:bg-brand-500/10",
-      text: "text-brand-600 dark:text-brand-400",
+      bg: 'bg-brand-50 dark:bg-brand-500/10',
+      text: 'text-brand-600 dark:text-brand-400',
     },
     slate: {
-      bg: "bg-ink-100 dark:bg-ink-800",
-      text: "text-ink-700 dark:text-ink-200",
+      bg: 'bg-ink-100 dark:bg-ink-800',
+      text: 'text-ink-700 dark:text-ink-200',
     },
   }[color] || {
-    bg: "bg-brand-50 dark:bg-brand-500/10",
-    text: "text-brand-600 dark:text-brand-400",
-  };
+    bg: 'bg-brand-50 dark:bg-brand-500/10',
+    text: 'text-brand-600 dark:text-brand-400',
+  }
 
   if (loading) {
     return (
@@ -472,7 +442,7 @@ export const StatCard = ({
           <Skeleton className="h-10 w-10 rounded-xl" />
         </div>
       </Card>
-    );
+    )
   }
 
   return (
@@ -484,8 +454,8 @@ export const StatCard = ({
           </div>
           <div
             className={clsx(
-              "text-3xl font-extrabold tracking-tight mt-1 tabular-nums",
-              "text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors",
+              'text-3xl font-extrabold tracking-tight mt-1 tabular-nums',
+              'text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors',
             )}
           >
             {value}
@@ -495,25 +465,21 @@ export const StatCard = ({
               {trend && (
                 <span
                   className={clsx(
-                    "inline-flex items-center gap-1 font-semibold",
-                    trend > 0 ? "text-emerald-600" : "text-red-600",
+                    'inline-flex items-center gap-1 font-semibold',
+                    trend > 0 ? 'text-emerald-600' : 'text-red-600',
                   )}
                 >
-                  {trend > 0 ? "▲" : "▼"} {Math.abs(trend)}%
+                  {trend > 0 ? '▲' : '▼'} {Math.abs(trend)}%
                 </span>
               )}
-              {sub && (
-                <span className="text-ink-500 dark:text-ink-400 truncate">
-                  {sub}
-                </span>
-              )}
+              {sub && <span className="text-ink-500 dark:text-ink-400 truncate">{sub}</span>}
             </div>
           )}
         </div>
         {icon && (
           <div
             className={clsx(
-              "w-11 h-11 rounded-xl grid place-items-center shrink-0",
+              'w-11 h-11 rounded-xl grid place-items-center shrink-0',
               tones.bg,
               tones.text,
             )}
@@ -523,8 +489,8 @@ export const StatCard = ({
         )}
       </div>
     </Card>
-  );
-};
+  )
+}
 
 // ---------- Section Heading ----------
 export const SectionHeading = ({ eyebrow, title, sub, actions }) => (
@@ -544,11 +510,9 @@ export const SectionHeading = ({ eyebrow, title, sub, actions }) => (
         </p>
       )}
     </div>
-    {actions && (
-      <div className="flex items-center gap-2 shrink-0">{actions}</div>
-    )}
+    {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
   </div>
-);
+)
 
 // ---------- Empty State ----------
 export function EmptyState({ icon, title, description, action }) {
@@ -559,43 +523,39 @@ export function EmptyState({ icon, title, description, action }) {
           {icon}
         </div>
       )}
-      <h3 className="text-lg font-bold text-ink-900 dark:text-white">
-        {title}
-      </h3>
+      <h3 className="text-lg font-bold text-ink-900 dark:text-white">{title}</h3>
       {description && (
-        <p className="text-sm text-ink-500 dark:text-ink-400 mt-1 max-w-sm">
-          {description}
-        </p>
+        <p className="text-sm text-ink-500 dark:text-ink-400 mt-1 max-w-sm">{description}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>
-  );
+  )
 }
 
 // ---------- Divider ----------
-export const Divider = ({ className = "" }) => (
-  <div className={clsx("h-px w-full bg-ink-200 dark:bg-ink-800", className)} />
-);
+export const Divider = ({ className = '' }) => (
+  <div className={clsx('h-px w-full bg-ink-200 dark:bg-ink-800', className)} />
+)
 
 // ---------- Avatar ----------
-export function Avatar({ name = "", size = 36, src, color = "brand" }) {
+export function Avatar({ name = '', size = 36, src, color = 'brand' }) {
   const initials = name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
     .slice(0, 2)
-    .join("")
-    .toUpperCase();
+    .join('')
+    .toUpperCase()
   const colorMap = {
-    brand: "from-brand-500 to-brand-700",
-    blue: "from-blue-500 to-indigo-600",
-    purple: "from-purple-500 to-fuchsia-600",
-    green: "from-emerald-500 to-teal-600",
-    orange: "from-orange-500 to-red-500",
-  };
+    brand: 'from-brand-500 to-brand-700',
+    blue: 'from-blue-500 to-indigo-600',
+    purple: 'from-purple-500 to-fuchsia-600',
+    green: 'from-emerald-500 to-teal-600',
+    orange: 'from-orange-500 to-red-500',
+  }
   return (
     <div
       className={clsx(
-        "rounded-full bg-gradient-to-br text-white grid place-items-center font-bold shrink-0 select-none ring-2 ring-white dark:ring-ink-900",
+        'rounded-full bg-gradient-to-br text-white grid place-items-center font-bold shrink-0 select-none ring-2 ring-white dark:ring-ink-900',
         colorMap[color] || colorMap.brand,
       )}
       style={{ width: size, height: size, fontSize: size * 0.38 }}
@@ -610,32 +570,29 @@ export function Avatar({ name = "", size = 36, src, color = "brand" }) {
         initials
       )}
     </div>
-  );
+  )
 }
 
 // ---------- Progress Bar ----------
-export function Progress({ value = 0, color = "brand", className = "" }) {
+export function Progress({ value = 0, color = 'brand', className = '' }) {
   const colors = {
-    brand: "bg-brand-500",
-    red: "bg-red-500",
-    green: "bg-emerald-500",
-    blue: "bg-blue-500",
-    amber: "bg-amber-500",
-  };
+    brand: 'bg-brand-500',
+    red: 'bg-red-500',
+    green: 'bg-emerald-500',
+    blue: 'bg-blue-500',
+    amber: 'bg-amber-500',
+  }
   return (
     <div
       className={clsx(
-        "h-1.5 w-full overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800",
+        'h-1.5 w-full overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800',
         className,
       )}
     >
       <div
-        className={clsx(
-          "h-full rounded-full transition-all duration-500",
-          colors[color],
-        )}
+        className={clsx('h-full rounded-full transition-all duration-500', colors[color])}
         style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
       />
     </div>
-  );
+  )
 }

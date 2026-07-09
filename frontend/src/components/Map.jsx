@@ -1,20 +1,27 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   TileLayer,
   Marker,
   Popup,
   CircleMarker,
+  Polyline,
   useMap,
   Circle,
 } from "react-leaflet";
 import L from "leaflet";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Badge, Button, priorityBadge, statusBadge, Spinner } from "./ui";
+import { Badge, Button, Spinner, priorityBadge, statusBadge } from "./ui";
 import { timeAgo } from "../lib/helpers";
-import { Navigation, Crosshair, AlertTriangle } from "lucide-react";
+import {
+  Navigation,
+  Crosshair,
+  AlertTriangle,
+  Route as RouteIcon,
+} from "lucide-react";
 import { useTheme } from "../store/theme";
+import { getRoute, ORS_API_KEY } from "../lib/mapConfig";
 
 // ---------- Colors ----------
 const PIN_COLORS = {
@@ -37,7 +44,7 @@ const POI_STYLES = {
 function makeIncidentIcon(severity, isCritical = false, size = 34) {
   const color = PIN_COLORS[severity] || PIN_COLORS.low;
   const html = `
-    <div class="pin-drop" style="position:relative;width:${size}px;height:${size + 10}px;${isCritical ? "color:" + color : ""}">
+    <div class="pin-drop" style="position:relative;width:${size}px;height:${size * 1.3}px;${isCritical ? "color:" + color : ""}">
       <svg viewBox="0 0 32 42" width="${size}" height="${size * 1.3}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id="shadow-${severity}-${size}" x="-50%" y="-50%" width="200%" height="200%">
@@ -60,7 +67,7 @@ function makeIncidentIcon(severity, isCritical = false, size = 34) {
   });
 }
 
-// ---------- POI pin (rounded square with emoji) ----------
+// ---------- POI pin ----------
 function makePOIIcon(kind) {
   const s = POI_STYLES[kind] || POI_STYLES.default;
   const html = `
@@ -77,7 +84,7 @@ function makePOIIcon(kind) {
   });
 }
 
-// ---------- User location pin ----------
+// ---------- User pin ----------
 function makeUserIcon() {
   const html = `
     <div class="user-dot" style="position:relative;width:18px;height:18px;">
@@ -103,6 +110,74 @@ function Recenter({ center, zoom }) {
   return null;
 }
 
+function RouteLayer({ start, end, onInfo }) {
+  const [route, setRoute] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    if (!start || !end) {
+      setRoute(null);
+      return;
+    }
+    if (!ORS_API_KEY) {
+      setRoute(null);
+      return;
+    }
+    setLoading(true);
+    getRoute([start[0], start[1]], [end[0], end[1]])
+      .then((r) => {
+        if (active) setRoute(r);
+      })
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [start && start[0], start && start[1], end && end[0], end && end[1]]);
+
+  useEffect(() => {
+    onInfo?.(route, loading);
+  }, [route, loading, onInfo]);
+
+  if (!route) return null;
+  return (
+    <>
+      <Polyline
+        positions={route.coords}
+        pathOptions={{
+          color: "#3b82f6",
+          weight: 6,
+          opacity: 0.25,
+          lineCap: "round",
+          lineJoin: "round",
+        }}
+      />
+      <Polyline
+        positions={route.coords}
+        pathOptions={{
+          color: "#ffffff",
+          weight: 2,
+          opacity: 0.9,
+          lineCap: "round",
+          lineJoin: "round",
+          dashArray: "1 0",
+        }}
+      />
+      <Polyline
+        positions={route.coords}
+        pathOptions={{
+          color: "#3b82f6",
+          weight: 2,
+          opacity: 0.9,
+          lineCap: "round",
+          lineJoin: "round",
+          dashArray: "8 10",
+        }}
+      />
+    </>
+  );
+}
+
 export default function Map({
   incidents = [],
   pois = [],
@@ -114,11 +189,15 @@ export default function Map({
   radiusKm,
   radiusCenter,
   selectable = false,
+  routeTo = null,
+  showRouteBadge = true,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { theme } = useTheme();
   const [mapReady, setMapReady] = useState(false);
+  const [routeInfo, setRouteInfo] = useState(null);
+  const [routeLoading, setRouteLoading] = useState(false);
   const isDark =
     theme === "dark" || document.documentElement.classList.contains("dark");
 
@@ -267,25 +346,61 @@ export default function Map({
               </Marker>
             );
           })}
+
+        {userLoc && routeTo && (
+          <RouteLayer
+            start={[userLoc.lat, userLoc.lng]}
+            end={routeTo}
+            onInfo={(r, loading) => {
+              setRouteInfo(r);
+              setRouteLoading(loading);
+            }}
+          />
+        )}
       </MapContainer>
 
-      {/* Floating Map Controls */}
+      {/* Floating controls */}
       <div className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
         <button
           title="Recenter to my location"
+          className="h-10 w-10 grid place-items-center rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur border border-ink-200 dark:border-ink-700 shadow-sm hover:bg-white dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200 transition"
           onClick={() => {
-            if (!userLoc) return;
-            // Trigger a re-fly by dispatching a custom event if needed; for now, rely on Recenter if parent updates center
-            const map =
-              document.querySelector(".leaflet-container")?._leaflet_map;
+            const el = document.querySelector(".leaflet-container");
+            const map = el?._leaflet_map;
+            if (map && userLoc)
+              map.flyTo([userLoc.lat, userLoc.lng], 15, { duration: 0.7 });
           }}
-          className="h-10 w-10 grid place-items-center rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur border border-ink-200 dark:border-ink-700 shadow-sm hover:bg-white dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200 transition-all"
         >
           <Crosshair size={16} />
         </button>
       </div>
 
-      {/* Overlay while tiles load */}
+      {/* Route info badge */}
+      {showRouteBadge &&
+        userLoc &&
+        routeTo &&
+        ORS_API_KEY &&
+        (routeLoading || routeInfo) && (
+          <div className="absolute bottom-3 left-3 z-[400] bg-white/95 dark:bg-ink-900/95 backdrop-blur rounded-xl px-3 py-2 shadow-lg border border-ink-200 dark:border-ink-800 text-xs flex items-center gap-2">
+            <RouteIcon size={14} className="text-blue-500" />
+            {routeLoading ? (
+              <span className="text-ink-500">Calculating route…</span>
+            ) : routeInfo ? (
+              <span className="text-ink-700 dark:text-ink-200 font-semibold">
+                {routeInfo.duration_min} min · {routeInfo.distance_km} km
+              </span>
+            ) : null}
+          </div>
+        )}
+      {showRouteBadge && userLoc && routeTo && !ORS_API_KEY && (
+        <div className="absolute bottom-3 left-3 z-[400] bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-3 py-2 shadow-md text-xs text-amber-800 dark:text-amber-300 max-w-[300px]">
+          Add your <b>OpenRouteService (HeiGIT)</b> API key in{" "}
+          <code>frontend/src/lib/mapConfig.js</code> to see driving routes &
+          ETA.
+        </div>
+      )}
+
+      {/* Loader overlay */}
       {!mapReady && (
         <div className="absolute inset-0 z-[500] grid place-items-center bg-white/80 dark:bg-ink-900/80 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-2 text-ink-500 dark:text-ink-400">
