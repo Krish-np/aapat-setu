@@ -64,7 +64,7 @@ function NavSection({ title, children, collapsed }) {
   )
 }
 
-export default function Sidebar({ collapsed, onToggle }) {
+export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onCloseMobile }) {
   const { user, logout } = useAuth()
   const { theme, toggle } = useTheme()
   const { t, i18n } = useTranslation()
@@ -88,12 +88,14 @@ export default function Sidebar({ collapsed, onToggle }) {
       <aside
         className={[
           'fixed md:sticky top-0 left-0 z-40 h-screen shrink-0',
-          'bg-white/90 dark:bg-ink-950/80 backdrop-blur-2xl',
+          'bg-white/95 dark:bg-ink-950/90 backdrop-blur-2xl',
           'border-r border-ink-200/70 dark:border-ink-800/80',
           'flex flex-col transition-all duration-200',
           collapsed ? 'w-[72px]' : 'w-64',
-          // Mobile: slide drawer
-          'max-md:-translate-x-full max-md:shadow-2xl max-md:w-72',
+          // Mobile: slide drawer — open when mobileOpen=true
+          mobileOpen
+            ? 'max-md:translate-x-0 max-md:shadow-2xl max-md:w-72'
+            : 'max-md:-translate-x-full max-md:shadow-2xl max-md:w-72',
         ].join(' ')}
       >
         {/* Brand */}
@@ -117,38 +119,37 @@ export default function Sidebar({ collapsed, onToggle }) {
 
         {/* Nav */}
         <div className="flex-1 overflow-y-auto px-3 py-3">
-          <NavSection title="Overview" collapsed={collapsed}>
-            {isCitizen && <NavItem to="/app/home" icon={Home} label="Home" collapsed={collapsed} />}
-            {isVolunteer && <NavItem to="/app/home" icon={Home} label="Home" collapsed={collapsed} />}
-            {isAgency && <NavItem to="/app/command" icon={Target} label="Command" collapsed={collapsed} />}
-            {isAdmin && <NavItem to="/app/admin" icon={LayoutDashboard} label="Admin" collapsed={collapsed} />}
+          <NavSection title={t('nav.overview')} collapsed={collapsed}>
+            {(isCitizen || isVolunteer) && <NavItem to="/app/home" icon={Home} label={t('nav.home')} collapsed={collapsed} />}
+            {isAgency && <NavItem to="/app/command" icon={Target} label={t('nav.command')} collapsed={collapsed} />}
+            {isAdmin && <NavItem to="/app/admin" icon={LayoutDashboard} label={t('nav.admin')} collapsed={collapsed} />}
           </NavSection>
 
-          <NavSection title="Response" collapsed={collapsed}>
-            <NavItem to="/app/incidents" icon={ClipboardList} label="Incidents" collapsed={collapsed} />
-            <NavItem to="/app/map" icon={MapPin} label="Live Map" collapsed={collapsed} />
-            <NavItem to="/app/report" icon={AlertTriangle} label="Report" collapsed={collapsed} />
-            <NavItem to="/app/tasks" icon={Megaphone} label="Tasks" collapsed={collapsed} />
-            <NavItem to="/app/alerts" icon={Megaphone} label="Alerts" collapsed={collapsed} />
+          <NavSection title={t('nav.response')} collapsed={collapsed}>
+            <NavItem to="/app/incidents" icon={ClipboardList} label={t('nav.incidents')} collapsed={collapsed} />
+            <NavItem to="/app/map" icon={MapPin} label={t('nav.map')} collapsed={collapsed} />
+            {user.role === 'citizen' && <NavItem to="/app/report" icon={AlertTriangle} label={t('nav.report')} collapsed={collapsed} />}
+            <NavItem to="/app/tasks" icon={Megaphone} label={t('nav.tasks')} collapsed={collapsed} />
+            <NavItem to="/app/alerts" icon={Megaphone} label={t('nav.alerts')} collapsed={collapsed} />
           </NavSection>
 
           {(isAgency || isVolunteer) && (
-            <NavSection title="Resources" collapsed={collapsed}>
-              <NavItem to="/app/resources" icon={Package} label="Resources" collapsed={collapsed} />
+            <NavSection title={t('nav.resources')} collapsed={collapsed}>
+              <NavItem to="/app/resources" icon={Package} label={t('nav.resources')} collapsed={collapsed} />
               {(isMunicipality || isAdmin || user.role === 'responder') && (
-                <NavItem to="/app/crews" icon={Users} label="Crews" collapsed={collapsed} />
+                <NavItem to="/app/crews" icon={Users} label={t('nav.crews')} collapsed={collapsed} />
               )}
             </NavSection>
           )}
 
           {(isAdmin || user.role === 'responder' || isMunicipality) && (
-            <NavSection title="Insights" collapsed={collapsed}>
-              <NavItem to="/app/analytics" icon={BarChart3} label="Analytics" collapsed={collapsed} />
+            <NavSection title={t('nav.insights')} collapsed={collapsed}>
+              <NavItem to="/app/analytics" icon={BarChart3} label={t('nav.analytics')} collapsed={collapsed} />
             </NavSection>
           )}
 
-          <NavSection title="Safety" collapsed={collapsed}>
-            <NavItem to="/app/knowledge" icon={BookOpen} label="First Aid" collapsed={collapsed} />
+          <NavSection title={t('nav.safety')} collapsed={collapsed}>
+            <NavItem to="/app/knowledge" icon={BookOpen} label={t('nav.knowledge')} collapsed={collapsed} />
           </NavSection>
         </div>
 
@@ -161,13 +162,13 @@ export default function Sidebar({ collapsed, onToggle }) {
               'text-ink-600 dark:text-ink-400 hover:bg-ink-100 dark:hover:bg-ink-800',
               collapsed ? 'justify-center px-0 w-10 mx-auto' : '',
             ].join(' ')}
-            title={collapsed ? 'Notifications' : undefined}
+            title={collapsed ? t('nav.notifications') : undefined}
           >
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <Bell size={18} />
               <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-ink-950 animate-pulse-slow" />
             </div>
-            {!collapsed && <span>Notifications</span>}
+            {!collapsed && <span className="truncate">{t('nav.notifications')}</span>}
           </Link>
 
           <div className={['flex items-center gap-1', collapsed ? 'justify-center' : ''].join(' ')}>
@@ -225,14 +226,11 @@ export default function Sidebar({ collapsed, onToggle }) {
         </div>
       </aside>
 
-      {/* Mobile overlay */}
+      {/* Nav items close mobile drawer on click */}
       <div
-        className={[
-          'fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden',
-        ].join(' ')}
-        onClick={onToggle}
-        style={{ display: 'none' }}
-        id="sidebar-backdrop"
+        className="hidden"
+        onClick={onCloseMobile}
+        id="sidebar-mobile-close-trigger"
       />
     </>
   )

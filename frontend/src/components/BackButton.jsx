@@ -1,9 +1,9 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
-export default function BackButton({ to, label = "Back" }) {
-  const navigate = useNavigate();
+export default function BackButton({ to, label = 'Back' }) {
+  const navigate = useNavigate()
   return (
     <button
       onClick={() => (to ? navigate(to) : navigate(-1))}
@@ -12,5 +12,5 @@ export default function BackButton({ to, label = "Back" }) {
       <ArrowLeft size={16} />
       {label}
     </button>
-  );
+  )
 }

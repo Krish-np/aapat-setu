@@ -1,31 +1,41 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, Button, Textarea, Input, Badge } from '../components/ui'
+import { Card, Button, Textarea, Input, Badge, Spinner } from '../components/ui'
 import { EMERGENCY_CATEGORIES, getLocation } from '../lib/helpers'
 import api from '../lib/api'
 import { toast } from '../components/toaster'
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import BackButton from '../components/BackButton'
+import { useTheme } from '../store/theme'
+import { useTranslation } from 'react-i18next'
 import {
   AlertTriangle, MapPin, Mic, Image as ImageIcon, Camera, CheckCircle2,
   Users, Phone, ChevronRight, ChevronLeft, Cpu, Loader2, Sparkles, Upload, Send
 } from 'lucide-react'
 
-function Pin() {
+function PickPin() {
   return L.divIcon({
     className:'pin-drop',
-    html:`<div style="transform:translate(-50%,-100%)">
-      <svg width="38" height="48" viewBox="0 0 38 48" fill="none">
-        <path d="M19 0C8.5 0 0 8.5 0 19c0 14 19 29 19 29s19-15 19-29C38 8.5 29.5 0 19 0z" fill="#ef4444"/>
-        <circle cx="19" cy="18" r="8" fill="white"/>
+    html:`<div style="position:relative;transform:translate(-50%,-100%)">
+      <svg width="40" height="52" viewBox="0 0 40 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><filter id="psh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.3"/></filter></defs>
+        <path filter="url(#psh)" d="M20 0C8.95 0 0 8.95 0 20c0 13.7 20 32 20 32s20-18.3 20-32C40 8.95 31.05 0 20 0z" fill="#ef4444" stroke="#fff" stroke-width="2"/>
+        <circle cx="20" cy="19" r="6" fill="#fff"/>
       </svg></div>`,
-    iconSize:[38,48], iconAnchor:[19,48],
+    iconSize:[40,52], iconAnchor:[20,52],
   })
 }
 function Pick({ setPos }) {
   useMapEvents({ click(e){ setPos({lat:e.latlng.lat, lng:e.latlng.lng}) } })
+  return null
+}
+function RecenterMap({ center }) {
+  const map = useMap()
+  useEffect(() => {
+    if (center) map.flyTo(center, Math.max(map.getZoom(), 16), { duration: 0.6 })
+  }, [center?.lat, center?.lng])
   return null
 }
 
@@ -33,6 +43,7 @@ const STEPS = ['Details', 'Media', 'Location', 'Review']
 
 export default function Report() {
   const nav = useNavigate()
+  const { t } = useTranslation()
   const [step, setStep] = useState(0)
   const [cat, setCat] = useState('fire')
   const [desc, setDesc] = useState('')
@@ -47,7 +58,9 @@ export default function Report() {
   const [recTimer, setRecTimer] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
+  const [mapReady, setMapReady] = useState(false)
   const fileRef = useRef(), recInterval = useRef()
+  const { theme } = useTheme()
 
   useEffect(() => {
     setLocating(true)
@@ -90,8 +103,9 @@ export default function Report() {
   }
 
   const submit = async () => {
-    if (!desc.trim() && !voiceTranscript) { toast('Please add a description or record voice', 'err'); return }
-    if (!pos) { toast('Please set a location', 'err'); return }
+    if (submitting) return // double-click guard
+    if (!desc.trim() && !voiceTranscript) { toast(t('report.need_desc'), 'err'); return }
+    if (!pos) { toast(t('report.need_loc'), 'err'); return }
     setSubmitting(true)
     try {
       const finalDesc = desc + (voiceTranscript ? `\n\n[Voice note]: ${voiceTranscript}` : '')
@@ -118,9 +132,9 @@ export default function Report() {
     (step === 3)
 
   return (
-    <div className="max-w<BackButton/>
-    -4xl mx-auto p-4 md:p-6">
-      <div className="mb-6">
+    <div className="max-w-4xl mx-auto p-4 md:p-6">
+      <BackButton />
+      <div className="mb-6 mt-2">
         <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><AlertTriangle className="text-red-500"/> Report Emergency</h1>
         <p className="text-ink-500 dark:text-ink-400 text-sm mt-1">Share what's happening — AI will triage instantly.</p>
       </div>
@@ -221,18 +235,47 @@ export default function Report() {
             {step === 2 && (
               <div>
                 <label className="text-sm font-semibold mb-2 block flex items-center gap-2"><MapPin size={16}/> Pin the exact location <span className="text-red-500">*</span></label>
-                <div className="h-96 rounded-xl overflow-hidden border border-ink-200 dark:border-ink-800">
+                <div className="h-96 rounded-xl overflow-hidden border border-ink-200 dark:border-ink-800 relative">
+                  {!pos && (
+                    <div className="absolute inset-0 grid place-items-center bg-ink-50 dark:bg-ink-900 text-ink-400">
+                      <div className="flex flex-col items-center gap-2">
+                        <Spinner size={22} className="text-brand-600" />
+                        <span className="text-xs">Getting location…</span>
+                      </div>
+                    </div>
+                  )}
                   {pos && (
-                    <MapContainer center={[pos.lat,pos.lng]} zoom={16} style={{height:'100%',width:'100%'}} scrollWheelZoom>
-                      <TileLayer attribution='&copy; OpenStreetMap' url={document.documentElement.classList.contains('dark')?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'}/>
+                    <MapContainer
+                      center={[pos.lat,pos.lng]}
+                      zoom={16}
+                      style={{height:'100%',width:'100%'}}
+                      scrollWheelZoom
+                      key={`${theme}-${pos.lat}-${pos.lng}`}
+                      whenReady={()=>setMapReady(true)}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                        url={theme==='dark'
+                          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                          : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'}
+                      />
                       <Pick setPos={setPos}/>
-                      <Marker position={[pos.lat,pos.lng]} icon={Pin()}/>
+                      <RecenterMap center={pos}/>
+                      <Marker position={[pos.lat,pos.lng]} icon={PickPin()}/>
                     </MapContainer>
+                  )}
+                  {!mapReady && pos && (
+                    <div className="absolute inset-0 grid place-items-center bg-white/70 dark:bg-ink-900/70 backdrop-blur-sm z-[400]">
+                      <div className="flex flex-col items-center gap-2 text-ink-500 dark:text-ink-400">
+                        <Spinner size={22} className="text-brand-600" />
+                        <span className="text-xs font-medium">Loading map…</span>
+                      </div>
+                    </div>
                   )}
                 </div>
                 <div className="flex items-center justify-between mt-3 text-xs text-ink-500">
                   <span>Click on the map to place pin · Drag to pan · Scroll to zoom</span>
-                  <button onClick={()=>{setLocating(true); getLocation().then(setPos).finally(()=>setLocating(false))}} className="flex items-center gap-1 font-semibold text-brand-600">
+                  <button onClick={()=>{setLocating(true); setMapReady(false); getLocation().then(setPos).finally(()=>setLocating(false))}} className="flex items-center gap-1 font-semibold text-brand-600 dark:text-brand-400 hover:underline">
                     {locating?<Loader2 className="animate-spin" size={14}/>:<MapPin size={14}/>} Use my location
                   </button>
                 </div>
@@ -267,10 +310,10 @@ export default function Report() {
         <div className="flex items-center justify-between mt-6 pt-5 border-t border-ink-200 dark:border-ink-800">
           <Button variant="ghost" onClick={()=>nav(-1)} disabled={submitting}>Cancel</Button>
           <div className="flex gap-2">
-            {step>0 && <Button variant="ghost" onClick={()=>setStep(s=>s-1)} disabled={submitting}><ChevronLeft size={16}/> Back</Button>}
-            {step<3 && <Button onClick={()=>canNext&&setStep(s=>s+1)} disabled={!canNext}>Next <ChevronRight size={16}/></Button>}
+            {step>0 && <Button variant="ghost" onClick={()=>setStep(s=>s-1)} disabled={submitting}><ChevronLeft size={16}/> {t('report.back')}</Button>}
+            {step<3 && <Button onClick={()=>canNext && !submitting && setStep(s=>s+1)} disabled={!canNext || submitting}>{t('report.next')} <ChevronRight size={16}/></Button>}
             {step===3 && <Button onClick={submit} disabled={submitting||!pos}>
-              {submitting?<><Loader2 className="animate-spin" size={16}/> AI Processing...</>:<><Send size={16}/> Submit to AI</>}
+              {submitting?<><Loader2 className="animate-spin" size={16}/> {t('report.processing')}</>:<><Send size={16}/> {t('report.submit_ai')}</>}
             </Button>}
           </div>
         </div>

@@ -17,8 +17,34 @@ def _to_out(t: models.Task, db: Session) -> schemas.TaskOut:
 @router.get("", response_model=List[schemas.TaskOut])
 def list_tasks(db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
     q = db.query(models.Task)
-    if current.role == models.UserRole.volunteer:
-        q = q.filter((models.Task.assignee_id == None) | (models.Task.assignee_id == current.id))
+
+    # Role-based scoping — departments only see tasks relevant to them.
+    role = current.role
+    role_task_map = {
+        models.UserRole.hospital:     ["medical"],
+        models.UserRole.fire:         ["fire", "rescue"],
+        models.UserRole.police:       ["police", "rescue"],
+        models.UserRole.ngo:          ["shelter", "food", "water", "transport", "other"],
+        models.UserRole.municipality: ["rescue", "shelter", "transport", "other", "water", "food"],
+    }
+
+    if role == models.UserRole.citizen:
+        # Citizens don't use the task board (but if authenticated, show nothing)
+        return []
+    if role == models.UserRole.volunteer:
+        # Volunteers see unclaimed tasks OR tasks they claimed
+        q = q.filter(
+            (models.Task.assignee_id == None) | (models.Task.assignee_id == current.id)
+        )
+    elif role in role_task_map:
+        # Department: see tasks matching their assignee_role/task_type OR assigned to them OR unassigned for them
+        focus_types = role_task_map[role]
+        q = q.join(models.Incident, models.Incident.id == models.Task.incident_id, isouter=True).filter(
+            (models.Task.assignee_id == current.id)
+            | (models.Task.assignee_role == role.value)
+            | (models.Task.task_type.in_(focus_types))
+        )
+    # responder/admin see all (no extra filter)
     return q.order_by(models.Task.created_at.desc()).all()
 
 

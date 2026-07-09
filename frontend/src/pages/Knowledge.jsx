@@ -16,8 +16,9 @@ const GUIDES = [
 
 export default function Knowledge() {
   return (
-    <div className="max-w<BackButton/>
-    -6xl mx-auto p-4 md:p-6 space-y-5">
+    <>
+      <BackButton/>
+      <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-5">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><BookOpen className="text-blue-500"/> Emergency Safety Guide</h1>
         <p className="text-ink-500 text-sm mt-1">Quick reference for common emergencies</p>
@@ -57,5 +58,6 @@ export default function Knowledge() {
         </div>
       </Card>
     </div>
+    </>
   )
 }

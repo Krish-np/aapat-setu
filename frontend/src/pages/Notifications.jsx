@@ -26,8 +26,9 @@ export default function Notifications() {
   useEffect(()=>{ api.get('/api/incidents').then(r=>setIncs(r.data)) },[])
   const notifs = generateDemoNotifications(incs, u)
   return (
-    <div className="max-w<BackButton/>
-    -3xl mx-auto p-4 md:p-6 space-y-5">
+    <>
+      <BackButton/>
+      <div className="max-w-3xl mx-auto p-4 md:p-6 space-y-5">
       <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><Bell className="text-purple-500"/> Notifications</h1>
       <div className="space-y-3">
         {notifs.map((n,i) => {
@@ -52,5 +53,6 @@ export default function Notifications() {
         })}
       </div>
     </div>
+    </>
   )
 }

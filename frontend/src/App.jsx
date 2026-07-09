@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import AppShell from './components/AppShell'
 import { useAuth } from './store/auth'
@@ -8,6 +8,7 @@ import { toast, Toaster } from './components/toaster'
 import Landing from './pages/Landing'
 import { lazy, Suspense } from 'react'
 import { Spinner } from './components/ui'
+import { useTranslation } from 'react-i18next'
 
 const Auth = lazy(() => import('./pages/Auth'))
 const AppHome = lazy(() => import('./pages/AppHome'))
@@ -56,19 +57,41 @@ function AppIndex() {
 
 function WsListener() {
   const nav = useNavigate()
+  const seenRef = useRef(new Set())
   useEffect(() => {
     const ws = wsConnect((msg) => {
-      if (msg.event === 'incident_created') toast(`🚨 New ${msg.data.incident_type} · ${msg.data.ai_severity}`, 'alert')
+      // Dedupe by event+id to prevent toast waterfall on reconnect/re-render
+      const key = msg.event + ':' + (msg.data?.id || '')
+      if (seenRef.current.has(key)) return
+      seenRef.current.add(key)
+      // Cap seen-set size so memory doesn't grow
+      if (seenRef.current.size > 100) {
+        const arr = Array.from(seenRef.current).slice(-50)
+        seenRef.current = new Set(arr)
+      }
+      if (msg.event === 'incident_created') {
+        toast(`🚨 New ${(msg.data.incident_type || 'incident').replace('_',' ')} · ${msg.data.ai_severity || ''}`, 'alert')
+      }
       if (msg.event === 'alert_created') toast(`📢 ${msg.data.title}`, 'info')
     })
     return () => ws.close()
-  }, [nav])
+    // Intentionally empty deps so only ONE ws connection for the app lifetime.
+    // nav is stable reference from react-router.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return null
 }
 
 export default function App() {
   useTheme()
   const { user } = useAuth()
+  const { i18n } = useTranslation()
+
+  // Sync <html lang="en/ne"> so Nepali font and CSS rules activate.
+  useEffect(() => {
+    const lang = i18n.language?.startsWith('ne') ? 'ne' : 'en'
+    document.documentElement.lang = lang
+  }, [i18n.language])
   return (
     <AppShell>
       <Toaster />

@@ -25,8 +25,9 @@ export default function Analytics() {
   const statusData = Object.entries(stats.by_status||{}).map(([k,v])=>({name:k.replace('_',' '), value:v}))
 
   return (
-    <div className="max-w<BackButton/>
-    -7xl mx-auto p-4 md:p-6 space-y-5">
+    <>
+      <BackButton/>
+      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold">📊 Intelligence Analytics</h1>
         <p className="text-ink-500 text-sm mt-1">Real-time emergency intelligence for decision makers</p>
@@ -86,5 +87,6 @@ export default function Analytics() {
         </Card>
       </div>
     </div>
+    </>
   )
 }

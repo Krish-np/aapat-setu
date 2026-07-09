@@ -15,7 +15,7 @@ echo "[2/4] Building frontend with Tailwind..."
 
 # ---------- MySQL Default ----------
 if [ -f backend/.env ]; then set -a; . backend/.env; set +a; fi
-export DATABASE_URL="${DATABASE_URL:-mysql+pymysql://root:@localhost:3306/aapatsetu?charset=utf8mb4}"
+export DATABASE_URL="${DATABASE_URL:-mysql+pymysql://root:@localhost:3306/aapatsetudb?charset=utf8mb4}"
 echo "[3/4] Database: $DATABASE_URL"
 
 echo "[4/4] Starting server..."

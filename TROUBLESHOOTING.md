@@ -52,7 +52,7 @@ XAMPP MySQL is not running.
 ### 4. `Access denied for user 'root'@'localhost'`
 Your XAMPP `root` user has a password (non-default). Edit `backend/.env` with Notepad/VS Code:
 ```
-DATABASE_URL=mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/aapatsetu?charset=utf8mb4
+DATABASE_URL=mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/aapatsetudb?charset=utf8mb4
 ```
 Replace `YOUR_PASSWORD` with your actual MySQL root password. If you have no password (most XAMPP installs), the default line works as-is.
 
@@ -100,7 +100,7 @@ npm install
 ## 🔄 Resetting the database
 If you want a clean start (e.g. after a schema change):
 1. Open http://localhost/phpmyadmin
-2. Click `aapatsetu` on the left
+2. Click `aapatsetudb` on the left
 3. Click "Drop" (or "Delete") at the top
 4. Restart the server (`run.bat` / `./run.sh`)
 The tables + demo data will be recreated automatically.

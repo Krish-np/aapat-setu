@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../lib/api'
 import {
@@ -12,6 +12,8 @@ import {
 import Map from '../components/Map'
 import { useAuth } from '../store/auth'
 import { timeAgo } from '../lib/helpers'
+import { useTranslation } from 'react-i18next'
+import { wsConnect } from '../lib/api'
 import {
   Package,
   Users,
@@ -169,8 +171,18 @@ function DashboardSkeleton() {
 
 export default function AgencyDashboard() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const cfg = ROLE_CONFIG[user.role] || ROLE_CONFIG.ngo
   const Icon = cfg.icon
+
+  // Role → which incident types belong to this department (for scoping cards).
+  // Departments only see incidents matching their focus; responder/admin see all.
+  const roleScoped = ['responder', 'admin'].includes(user.role)
+
+  // Only responder + admin + volunteer can *create* incident reports via UI.
+  // Fire, police, municipality, hospital, ngo manage incoming feeds only.
+  const canReport = ['responder', 'admin'].includes(user.role)
+
   const [incs, setIncs] = useState([])
   const [pois, setPois] = useState([])
   const [resources, setResources] = useState([])
@@ -178,8 +190,9 @@ export default function AgencyDashboard() {
   const [predict, setPredict] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let active = true
+    setLoading(true)
     Promise.all([
       api.get('/api/incidents'),
       api.get('/api/incidents/pois/all'),
@@ -198,6 +211,20 @@ export default function AgencyDashboard() {
       .finally(() => active && setLoading(false))
     return () => { active = false }
   }, [])
+
+  useEffect(() => {
+    const cancel = load()
+    // Refresh KPIs live when incidents/updates come over WS
+    const ws = wsConnect((msg) => {
+      if (['incident_created', 'incident_updated', 'task_updated'].includes(msg.event)) {
+        load()
+      }
+    })
+    return () => {
+      cancel()
+      ws.close()
+    }
+  }, [load])
 
   if (loading) return <DashboardSkeleton />
 
@@ -258,6 +285,31 @@ export default function AgencyDashboard() {
     admin: { users: 10, incs: incs.length, active: active.length, res: resources.length },
   }[user.role] || {}
 
+  // Role-title map (i18n-aware)
+  const roleTitle = {
+    ngo: t('dashboard.relief_center'),
+    hospital: t('dashboard.hospital_cmd'),
+    police: t('dashboard.police_cmd'),
+    fire: t('dashboard.fire_cmd'),
+    municipality: t('dashboard.muni_cmd'),
+    responder: t('dashboard.responder_cmd'),
+    admin: t('dashboard.admin_panel'),
+  }[user.role] || cfg.title
+  const roleHelp = {
+    ngo: t('dashboard.relief_help'),
+    hospital: t('dashboard.hospital_help'),
+    police: t('dashboard.police_help'),
+    fire: t('dashboard.fire_help'),
+    municipality: t('dashboard.muni_help'),
+    responder: t('dashboard.responder_help'),
+    admin: t('dashboard.admin_help'),
+  }[user.role] || cfg.help
+
+  // On the map, show ALL active pins for situational awareness,
+  // but in the "Relevant Incidents" sidebar card, scope to department focus.
+  const mapIncidents = active
+  const sidebarIncidents = roleScoped ? active : relevantFocus
+
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5 fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -265,35 +317,38 @@ export default function AgencyDashboard() {
           <div className="w-12 h-12 rounded-2xl bg-ink-100 dark:bg-ink-800 grid place-items-center shrink-0">
             <Icon size={24} className={cfg.iconColor} />
           </div>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">
-              {cfg.title}
+          <div className="min-w-0">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white break-words">
+              {roleTitle}
             </h1>
-            <p className="text-ink-500 dark:text-ink-400 text-sm mt-0.5">
+            <p className="text-ink-500 dark:text-ink-400 text-sm mt-0.5 leading-relaxed">
               <span className="live-dot inline-block mr-2 align-middle" />
-              {cfg.help}
+              {roleHelp}
             </p>
           </div>
         </div>
-        <Link to="/app/report">
-          <Button>
-            <AlertTriangle size={16} /> Report Incident
-          </Button>
-        </Link>
+        {canReport && (
+          <Link to="/app/report">
+            <Button>
+              <AlertTriangle size={16} /> {t('nav.report')}
+            </Button>
+          </Link>
+        )}
       </div>
 
+      {/* Critical banner — count reflects currently unresolved criticals, updates live via ws refresh */}
       {critical.length > 0 && (
         <Card className="!bg-gradient-to-r from-red-50 to-amber-50 dark:!from-red-500/10 dark:!to-amber-500/5 !border-red-200 dark:!border-red-500/20">
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-xl bg-red-500 text-white grid place-items-center shrink-0 shadow-md shadow-red-500/30">
               <AlertTriangle size={20} />
             </div>
-            <div className="min-w-0">
-              <div className="font-bold text-red-700 dark:text-red-300">
-                {critical.length} critical incident{critical.length > 1 ? 's' : ''} need attention
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-red-700 dark:text-red-300 break-words">
+                {critical.length} {t('dashboard.critical_banner')}
               </div>
-              <p className="text-sm text-ink-600 dark:text-ink-300 mt-1 line-clamp-2">
-                {critical.slice(0, 2).map((c) => c.ai_summary).join(' · ')}
+              <p className="text-sm text-ink-600 dark:text-ink-300 mt-1 line-clamp-2 leading-relaxed break-words">
+                {critical.slice(0, 2).map((c) => c.ai_summary || c.description || c.incident_type).filter(Boolean).join(' · ')}
               </p>
             </div>
           </div>
@@ -341,46 +396,46 @@ export default function AgencyDashboard() {
         <Card className="!p-0 overflow-hidden">
           <div className="p-5 border-b border-ink-200/60 dark:border-ink-800 flex justify-between items-center">
             <h3 className="font-bold flex items-center gap-2 text-ink-900 dark:text-white">
-              <MapPin size={18} className="text-brand-600" /> Situational Map
+              <MapPin size={18} className="text-brand-600" /> {t('dashboard.situational_map')}
             </h3>
             <Link
               to="/app/map"
-              className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
+              className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline whitespace-nowrap"
             >
-              Fullscreen →
+              {t('app.fullscreen')}
             </Link>
           </div>
-          <Map incidents={active} pois={pois} height={500} selectable />
+          <Map incidents={mapIncidents} pois={pois} height={500} selectable />
         </Card>
 
         <Card>
           <h3 className="font-bold mb-3 flex items-center gap-2 text-ink-900 dark:text-white">
-            <AlertTriangle size={18} className="text-brand-600" /> Relevant Incidents
+            <AlertTriangle size={18} className="text-brand-600" /> {roleScoped ? t('common.active') + ' ' + t('nav.incidents') : t('dashboard.relevant_incidents')}
           </h3>
-          {relevantFocus.length === 0 ? (
+          {sidebarIncidents.length === 0 ? (
             <EmptyState
               icon={<Shield size={28} />}
-              title="All clear"
-              description="No incidents matching your department's focus right now."
+              title={t('dashboard.all_clear')}
+              description={roleScoped ? t('app.no_incidents') : t('dashboard.no_focus_incidents')}
             />
           ) : (
             <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1 -mr-1">
-              {relevantFocus.slice(0, 10).map((i) => (
+              {sidebarIncidents.slice(0, 10).map((i) => (
                 <Link
                   key={i.id}
                   to={`/app/incidents/${i.id}`}
                   className="block p-3 rounded-xl hover:bg-ink-50 dark:hover:bg-ink-800/60 transition group"
                 >
                   <div className="flex items-start justify-between mb-1 gap-2">
-                    <strong className="text-sm capitalize text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition">
+                    <strong className="text-sm capitalize text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition break-words">
                       {i.incident_type?.replaceAll('_', ' ')}
                     </strong>
-                    <span className="text-[11px] text-ink-400 whitespace-nowrap">
+                    <span className="text-[11px] text-ink-400 whitespace-nowrap flex-shrink-0">
                       {timeAgo(i.created_at)}
                     </span>
                   </div>
-                  <p className="text-xs text-ink-500 dark:text-ink-400 line-clamp-2 leading-relaxed">
-                    {i.ai_summary}
+                  <p className="text-xs text-ink-500 dark:text-ink-400 line-clamp-3 leading-relaxed break-words">
+                    {i.ai_summary || i.description || '—'}
                   </p>
                   <div className="mt-2 flex gap-1.5 flex-wrap">
                     {(i.ai_required_resources || []).slice(0, 3).map((r) => (

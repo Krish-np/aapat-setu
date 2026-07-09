@@ -169,13 +169,13 @@ export default function AppHome() {
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 fade-in">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">
-            Namaste, {user.name.split(' ')[0]} <span role="img" aria-label="namaste">🙏</span>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white break-words">
+            {t('app.greeting_citizen')}, {user.name.split(' ')[0]} <span role="img" aria-label="namaste">🙏</span>
           </h1>
-          <p className="text-ink-500 dark:text-ink-400 text-sm mt-1 flex items-center gap-3">
+          <p className="text-ink-500 dark:text-ink-400 text-sm mt-1 flex items-center gap-3 flex-wrap break-words">
             <span className="inline-flex items-center gap-2">
-              <span className="live-dot" /> Live
+              <span className="live-dot" /> {t('common.active')}
             </span>
             {roleWelcome}
           </p>
@@ -200,13 +200,14 @@ export default function AppHome() {
               <AlertTriangle size={20} />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-bold text-red-700 dark:text-red-300">
-                {critical.length} critical incident{critical.length > 1 ? 's' : ''} require immediate attention
+              <div className="font-bold text-red-700 dark:text-red-300 break-words">
+                {critical.length} {t('dashboard.critical_banner')}
               </div>
-              <p className="text-sm text-ink-600 dark:text-ink-300 mt-1 line-clamp-2">
+              <p className="text-sm text-ink-600 dark:text-ink-300 mt-1 line-clamp-3 leading-relaxed break-words">
                 {critical
                   .slice(0, 2)
-                  .map((c) => c.ai_summary)
+                  .map((c) => c.ai_summary || c.description || c.incident_type)
+                  .filter(Boolean)
                   .join(' · ')}
               </p>
             </div>
@@ -284,8 +285,8 @@ export default function AppHome() {
                         {timeAgo(inc.created_at)}
                       </span>
                     </div>
-                    <p className="text-xs text-ink-500 dark:text-ink-400 line-clamp-2 mb-2 leading-relaxed">
-                      {inc.ai_summary || inc.description}
+                    <p className="text-xs text-ink-500 dark:text-ink-400 line-clamp-3 mb-2 leading-relaxed break-words">
+                      {inc.ai_summary || inc.description || '—'}
                     </p>
                     <Badge color={sb.color} dot>
                       {sb.label}

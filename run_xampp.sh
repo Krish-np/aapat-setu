@@ -7,7 +7,7 @@ cd "$(dirname "$0")/backend"
 if [ -f .env.xampp ]; then
   set -a; . .env.xampp; set +a
 else
-  export DATABASE_URL="${DATABASE_URL:-mysql+pymysql://root:@localhost:3306/aapatsetu?charset=utf8mb4}"
+  export DATABASE_URL="${DATABASE_URL:-mysql+pymysql://root:@localhost:3306/aapatsetudb?charset=utf8mb4}"
 fi
 
 echo "============================================================"

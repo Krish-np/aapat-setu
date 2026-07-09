@@ -4,13 +4,13 @@
 - Open XAMPP Control Panel → Start **Apache** (for phpMyAdmin) and **MySQL**.
 
 ## 2. Create Database
-- Visit http://localhost/phpmyadmin → New → name: `aapatsetu` → Create (utf8mb4).
+- Visit http://localhost/phpmyadmin → New → name: `aapatsetudb` → Create (utf8mb4).
 - You don't even need to do this — the app auto-creates the DB on first start.
 
 ## 3. Credentials
 Default XAMPP MySQL: user `root`, empty password. If yours has a password, edit `backend/.env`:
 ```
-DATABASE_URL=mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/aapatsetu?charset=utf8mb4
+DATABASE_URL=mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/aapatsetudb?charset=utf8mb4
 ```
 
 ## 4. Run
@@ -36,4 +36,4 @@ Wait for "Uvicorn running on http://0.0.0.0:8000" then open:
 | 9800000005 | ⚙️ Super Admin |
 
 ## 6. Reset database
-Drop the `aapatsetu` schema in phpMyAdmin → restart `./run.sh`. Tables + demo data are recreated automatically.
+Drop the `aapatsetudb` schema in phpMyAdmin → restart `./run.sh`. Tables + demo data are recreated automatically.
