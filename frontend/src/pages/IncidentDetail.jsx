@@ -5,7 +5,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import { Card, Button, Badge, priorityBadge, statusBadge, Skeleton } from '../components/ui'
 import Map from '../components/Map'
-import BackButton from '../components/BackButton'
 import { useAuth } from '../store/auth'
 import { toast } from '../components/toaster'
 import useRelativeTime from '../lib/useRelativeTime'
@@ -13,7 +12,7 @@ import { Clock, Users, MapPin, Shield, AlertTriangle, Sparkles, CheckCircle2, Im
 
 function DetailSkeleton() {
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
+    <div className="space-y-5">
       <Skeleton className="h-8 w-24 rounded-lg"/>
       <Card className="space-y-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -99,8 +98,7 @@ export default function IncidentDetail() {
   const isResponder = ['responder','admin','police','fire','hospital','municipality','ngo'].includes(user.role)
 
   return (
-    <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:.3 }} className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
-      <BackButton label="Back to incidents" />
+    <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:.3 }} className="space-y-5">
 
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-4">

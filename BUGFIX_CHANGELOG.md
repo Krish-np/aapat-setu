@@ -1,126 +1,126 @@
-# Aapat Setu — UI/UX Overhaul & Bugfix Changelog (FINAL)
+# Aapat Setu — Phoenix UI/UX Overhaul (FINAL)
 
-This ZIP is a complete fresh copy of the project. Extract it over your
-existing `aapat-setu/` folder (or replace the folder entirely). Works with
-your XAMPP MySQL setup (`aapatsetudb`) and `run.bat` as before.
+This ZIP is a complete fresh copy. Extract over your existing `aapat-setu/`
+folder. Works with XAMPP MySQL (`aapatsetudb`) and `run.bat` as before.
 
 ---
 
-## 1. Layout, Typography & Visual Polish
+## Summary
 
-- Normalized grid/flex containers across all dashboards so cards align
-  cleanly on all breakpoints. Fixed the earlier "zigzag" layout bug caused
-  by a malformed `<BackButton/>` accidentally injected inside Tailwind
-  className strings on multiple pages (every page audited).
-- Inter + Plus Jakarta Sans restored as the default English font stack
-  (no external Devanagari Google Font added, per request).
-- Added dedicated `html[lang="ne"]` CSS rules that switch to a robust
-  Devanagari system font stack (Mangal → Noto Sans Devanagari local →
-  Devanagari MT → Kokila → Arial Unicode MS) with increased line-height
-  (1.65 body / 1.5 headings) and slightly wider gap/spacing values,
-  so नेपाली renders without matra clipping or box-shift, and switching
-  back to English restores the original Inter/Jakarta layout with zero
-  layout jump.
-- Fixed Tailwind purge risk: all dynamic color classes (badges,
-  notification cards, alert severity bars, AI briefing cards) replaced
-  with static color maps so colors render in production builds.
-- Card component upgraded with Framer Motion hover lift + active press
-  (`whileHover` / `whileTap` spring).
-- Phoenix-style glass cards, soft shadows, rounded-2xl radii, and refined
-  color palette across light & dark themes.
+### 🎨 Design System (Phoenix admin-template style)
 
-## 2. Micro-interactions & Animations (Framer Motion)
+- **Layout** — Fixed left Sidebar + sticky Desktop top bar (hamburger,
+  breadcrumbs, search, notification bell, user dropdown). Mobile has a slim
+  top bar with hamburger + brand + bell. Content canvas is light gray
+  (`#f5f7fb` light / `#0b1220` dark), cards are white with soft 1px borders
+  + subtle shadows, rounded-lg (8-12px Phoenix-style radius). Page padding
+  is consistent 24/32px from AppShell (no double padding per page).
+- **Sidebar** — grouped uppercase section headers (Overview / Operations /
+  Resources / Insights / Safety), h-9 items, active item shows a 3px red
+  left-accent bar + soft red bg. Collapsed rail is 64px with vertical icon
+  stack (expand button present at bottom; collapse button in expanded
+  footer). EN/ने language pill, theme toggle, logout and user card
+  contained in the footer with no overlap in either state.
+- **Top bar** — Breadcrumbs with Home icon + section + page, search input
+  with inline magnifier, notification bell with red dot, avatar +
+  first-name/role dropdown (Profile/Settings/Sign out).
+- **Cards** — softened shadow to `0 1px 2px rgba(15,23,42,.04)`, hover lift
+  to soft elevation, rounded-lg corners (was rounded-2xl). No backdrop
+  blur stealing focus from content.
+- **Buttons** — primary/solid brand red (no harsh gradient), secondary
+  (white + border), ghost (transparent), danger/success/warning solid.
+  Sizes: h-9 md / h-8 sm / h-11 lg, all rounded-lg.
+- **Typography** — Inter body / Plus Jakarta headings preserved. Clear
+  scale: page titles 22-26px, section headers 15px semibold, body 13-14px,
+  captions 11-12px muted gray.
+- **Colors** — consistent brand (red #dc2626), semantic success/warning/
+  danger/info, neutral grays (ink-50 … ink-950). Replaced dynamic
+  template-string color classes across the app with static color maps so
+  Tailwind's purge never strips them.
+- **Micro-interactions** — Framer Motion page fade+slide-up, whileTap
+  scale on all buttons/toggles/lang pill, staggered AnimatePresence entry
+  on cards/rows/items, toast slide-in spring, toaster dedup, shimmer
+  skeletons.
+- **Empty states, skeletons, toasts** — every async page has a dedicated
+  skeleton (Alerts, Analytics, Tasks, Admin, Incidents table, Map page,
+  Notifications, Dashboard, Crews, Resources, AppHome, IncidentDetail).
 
-- Global page transitions in `AppShell.jsx` (fade + slide-up on route
-  change).
-- Sidebar nav items: hover translate, scale on icon, animated active
-  `layoutId` pill indicator.
-- Language `EN / ने` pill (Sidebar + Navbar): `whileTap` scale +
-  `whileHover` scale spring.
-- Notification / alert / task / admin rows all use AnimatePresence
-  staggered entry (fade + slide-up, delay-capped at 0.3–0.4s).
-- Mobile hamburger menu: animated backdrop + slide drawer.
-- Toasts: spring entry from the right, exit slide, deduplication to
-  prevent toast-waterfall.
-- Buttons already had `active:scale-[0.98]`; retained for tactile press.
+### 🩻 Navigation & Layout Bugs Fixed
 
-## 3. Notifications: Live Timestamps + WebSocket Propagation
+- **Sidebar overlap bug (collapsed)** — language button and theme toggle
+  no longer overlap. Collapsed footer is a clean vertical stack: lang
+  (single EN/ने tile at 40×40), theme, logout, divider, expand button.
+  Expanded footer shows lang pill + theme + collapse in one row and the
+  user card below.
+- **Missing expand button** — added a `PanelLeftOpen` button in collapsed
+  rail (bottom); collapse uses `PanelLeftClose` icon in expanded footer.
+- **Removed duplicate BackButton + max-w/p wrappers** from App pages.
+  Breadcrumbs in the top bar provide navigation context; BackButton is
+  reserved for the report-success view / modals where needed.
+- **Z-index** — Sidebar z-40, top bar z-20, mobile drawer backdrop z-30,
+  toaster z-[9999], user-dropdown z-50, mobile incident-list drawer
+  z-50 — no element paints behind another.
+- **Mobile top-bar height** — raised to h-14; toaster drops to top-4 on
+  md+ and below the top-bar on mobile so it never overlaps the header.
+- **Breadcrumb Home link** added to AppShell.
 
-- **Fixed "0s ago" frozen welcome card** — welcome notification uses a
-  real ISO timestamp (500ms in the past) so relative time starts at
-  "just now" → seconds → minutes, rather than being stuck on 0s.
-- **Removed hardcoded "6h/7h ago" strings** — every notification,
-  timeline entry, and card uses `useRelativeTime` (dayjs +
-  `relativeTime` plugin) with smart tick intervals (1s when <1 min,
-  30s when <1h, 60s when older) to re-render elapsed time live.
-- **Singleton WebSocket** in `lib/api.js` guarantees a single socket
-  across the app; duplicate mounts don't open new connections.
-- Global `WsListener` mounted in `App.jsx` toasts every
-  `incident_created` and `alert_created` event, so new citizen reports
-  propagate as high-priority toasts platform-wide.
-- `Notifications.jsx` rewritten: merges WS "live" queue with
-  server-fetched incidents, dedupes by `_id`, AnimatePresence list,
-  live "N new" badge, colored severity icons, fully i18n'd.
-- All relative times (Tasks "Posted", IncidentDetail "Reported",
-  Timeline items, Admin recent incidents, Alert list) use
-  `useRelativeTime` — no stale strings anywhere.
+### 🔔 Notifications & Real-time Sync
 
-## 4. Full EN / नेपाली Localization Audit
+- **Live relative times** everywhere: Notifications, Alerts, Tasks,
+  Incidents table, Admin "Recent Incidents", IncidentDetail timeline &
+  "Reported" stamp. Hook is zero-dependency (no dayjs/plugin imports →
+  fixes the "Failed to resolve dayjs/plugin/relativeTime" Vite error you
+  hit earlier). Smart tick: 1s <1min, 30s <1h, 60s older. Devanagari
+  digits auto-rendered for ने.
+- **"Welcome to Aapat Setu"** no longer stuck at "0s" — timestamp seeded
+  500ms in the past so it starts at "just now" → seconds → minutes.
+- **Singleton WebSocket** in `lib/api.js` prevents duplicate connections
+  and toast waterfalls.
+- **Global toast propagation** — `WsListener` mounted in `App.jsx` toasts
+  every `incident_created`/`alert_created` event, so new citizen reports
+  appear as high-priority toasts everywhere.
+- **Notifications page** — merged live queue + server-fetched incidents,
+  deduped by `_id`, "N new" badge, severity-colored icons (info/alert/
+  critical/resolved/welcome), staggered Framer Motion list.
 
-- Every hardcoded title/subtitle/copy in Alerts, Analytics, Admin,
-  Notifications, Knowledge, Tasks, IncidentDetail is now wrapped in
-  `t('key')` calls.
-- Added 40+ new keys to `i18n/en.json` and `i18n/ne.json` (alerts
-  severities, analytics stats, admin panel labels, notification copy,
-  toast strings).
-- Language toggle remains the `EN | ने` pill (no globe icon) in both
-  Sidebar and Navbar, with micro-animations.
-- `<html lang="…">` is synced to i18n language on every change so the
-  Nepali font stack and spacing rules activate/deactivate cleanly.
+### 🌐 Localization (EN/ने)
 
-## 5. OpenRouteService Custom Token + Routing
+- Wrapped all hardcoded strings across Alerts, Analytics, Tasks, Admin,
+  Notifications, Knowledge, MapPage, Incidents, Sidebar, AppShell with
+  `t('key')`.
+- Added 50+ new keys to both `i18n/en.json` and `i18n/ne.json`
+  (alerts severities, analytics stats, admin panel labels, notification
+  copy, toast strings, map page suffix).
+- `html[lang="ne"]` font stack (Mangal/Noto Devanagari/Kokila/Arial Unicode)
+  with line-height 1.65 body / 1.5 headings + slightly wider gap spacing
+  prevents matra clipping; swapping back to EN restores Inter/Jakarta
+  with zero layout shift.
+- Language pill gets whileTap/whileHover micro-animation in both Navbar
+  and Sidebar.
 
-- Token baked into `frontend/src/lib/mapConfig.js`:
+### 🗺️ Map & ORS Routing
+
+- ORS JWT token baked into `lib/mapConfig.js`:
   `eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjlhZDA0YzY2OTM3OTQ3ZjliM2RkNjIxZGNhNDY1YjdhIiwiaCI6Im11cm11cjY0In0=`
-- Three routing profiles wired up: **driving-car**, **foot-walking**,
-  **cycling-regular**.
-- `getRoute()` returns GeoJSON coordinate array, distance (km),
-  duration (minutes), turn-by-turn steps (HTML stripped to plain text),
-  and bbox.
-- `Map.jsx` fully rewritten premium component:
-  - 4-severity teardrop pins (Lucide icons inside), critical pins pulse.
-  - Lucide POI markers (hospitals, police, fire, NGOs, shelters,
-    supplies, municipality) with colored icon tiles + tail.
-  - 3-ring user-location dot (solid / halo / pulse).
-  - Route polyline drawn as shadow + highlight stroke.
-  - Bottom-right glass zoom + / − / recenter controls (default Leaflet
-    controls hidden).
-  - Top-left ETA badge with route summary + collapsible turn-by-turn
-    steps.
-  - Severity-colored popups with relative timestamps + "View details"
-    CTA.
-  - `key={isDark?'dark':'light'}` on MapContainer forces remount on
-    theme switch so tile themes refresh.
-- `MapPage.jsx`: premium chip filter tabs (not native select), mobile
-  slide-drawer incident list, skeleton loader, motion entry.
-- `Report.jsx`: matching premium zoom/recenter controls, animated
-  pick-pin, theme-reactive, submit-disabled while loading.
-- `IncidentDetail.jsx`: directions/routing auto-enabled, skeleton,
-  motion page entry.
+- Three profiles wired: driving-car, foot-walking, cycling-regular.
+  `getRoute()` returns GeoJSON coords, distance_km, duration_min,
+  turn-by-turn steps, bbox.
+- Premium Map.jsx: 4-severity teardrop pins (critical pulsing), Lucide
+  POI markers, 3-ring user dot, route polyline with shadow+highlight,
+  bottom-right glass zoom/recenter, top-left ETA badge with collapsible
+  turn list, severity popups with relative timestamps. Leaflet default
+  zoom/attribution hidden. Map remounts on theme switch.
+- MapPage: Phoenix chip-filter tabs, desktop side incident list, mobile
+  slide-drawer, skeleton, motion entry.
 
-## 6. SMTP Email Alerts
+### 📧 SMTP Email Alerts
 
-- New `backend/app/email_service.py` using **FastAPI-Mail**:
-  - Gracefully disables when SMTP env vars are unset (demo/offline
-    works without errors).
-  - `send_alert_email()` / `format_alert_html()` — branded red HTML
-    template.
-- Backend fires emails (non-blocking via `asyncio.create_task`) on:
-  - **Critical/high severity incidents** (`routers/incidents.py`).
-  - **Critical/warning public alerts** (`routers/incidents.py` +
-    `routers/alerts.py`).
+- New `backend/app/email_service.py` (FastAPI-Mail). Gracefully disables
+  if SMTP env vars are blank. Non-blocking `asyncio.create_task` fires
+  branded red HTML emails on critical/high incidents AND critical/warning
+  public alerts.
 - `fastapi-mail==1.4.1` added to `backend/requirements.txt`.
-- `.env` commented SMTP block included — uncomment and fill:
+- Configure in `backend/.env` (uncomment the block):
   ```
   SMTP_HOST=smtp.gmail.com
   SMTP_PORT=587
@@ -130,59 +130,35 @@ your XAMPP MySQL setup (`aapatsetudb`) and `run.bat` as before.
   SMTP_TLS=true
   ALERT_EMAIL_TO=ops@yourdomain.com,dispatch@yourdomain.com
   ```
-  For Gmail, create an App Password at https://myaccount.google.com/apppasswords.
-  Outlook/Hotmail: `smtp-mail.outlook.com` port 587 STARTTLS.
+  Gmail users: create an App Password at
+  https://myaccount.google.com/apppasswords.
 
-## 7. Skeleton Loaders Across Dashboards
+### 🛠️ Backend (minimal, additive only)
 
-Every page that fetches data now shows a Phoenix-style shimmer skeleton
-while loading:
+- `routers/tasks.py` — role-scoped listing (hospital/medical, fire/rescue,
+  police/security, ngo/shelter/food/water, muni/civic, volunteer unclaimed
+  + own, responder/admin all).
+- `routers/incidents.py` — fires SMTP email on critical/high.
+- `routers/alerts.py` — fires SMTP email on critical/warning.
 
-| Page | Skeleton |
-|---|---|
-| AppHome / Home | ✅ HomeSkeleton (existing) |
-| AgencyDashboard | ✅ DashboardSkeleton (existing) |
-| MapPage | ✅ MapPageSkeleton |
-| Notifications | ✅ (immediate render, content via useRelativeTime) |
-| Alerts | ✅ AlertSkeleton |
-| Analytics | ✅ AnalyticsSkeleton (stats + charts) |
-| Tasks | ✅ TasksSkeleton |
-| Admin | ✅ AdminSkeleton (stats, roles, system, incidents) |
-| IncidentDetail | ✅ DetailSkeleton |
-| Incidents | ✅ SkeletonTable |
-| Crews | ✅ CrewsSkeleton (existing) |
-| Resources | ✅ ResourcesSkeleton (existing) |
-| Knowledge | ✅ static content, motion entry |
+### ✅ Build & Test
 
-## 8. Backend Role-Scoped Task List (minimal backend change)
+- `npm run build` completes cleanly (✓ built in ~1.5s, zero errors/warnings).
+- Vite dev server starts and serves `index.html` (HTTP 200).
+- All 14 routes in `App.jsx` resolve (Home / Command / Admin / Report /
+  Incidents / IncidentDetail / Map / Tasks / Alerts / Analytics /
+  Resources / Crews / Notifications / Knowledge).
+- Smoke-tested skeletons, header, sidebar, language/theme toggles, and
+  card/button sizing at 375px / 768px / 1440px breakpoints via layout
+  inspection (flex/grid containers use `min-w-0`, `truncate`, `flex-wrap`
+  to prevent overflow; `break-words` on long strings).
+- No remaining dynamic `bg-${color}` Tailwind classes (all maps static).
 
-`routers/tasks.py` now filters by role server-side (matches UI logic):
+### Known Limitations (could NOT verify end-to-end without live backend)
 
-- hospital → medical
-- fire → fire / rescue / building_collapse
-- police → police / accident / security / crime / missing_person
-- ngo → shelter / food / water / clothing / flood / relief
-- municipality → rescue / shelter / transport / water / food / storm / road
-- volunteer → unclaimed tasks + their own
-- responder / admin → all
-
-## 9. How to run
-
-1. Extract this ZIP so the folder replaces `C:\Users\Hp\Desktop\git-hub\aapat-setu\`.
-2. Install the new backend dependency once (first run only):
-   ```
-   cd backend
-   pip install -r requirements.txt
-   ```
-3. (Optional) Edit `backend/.env` and uncomment + fill the SMTP block to
-   receive email alerts.
-4. Start XAMPP (Apache + MySQL), then run `run.bat` (or `run.sh`).
-5. Demo accounts: phone `9800000001` citizen, `...02/...03` volunteer,
-   `...04` responder, `...05` admin, `...10` hospital, `...11` police,
-   `...12` fire, `...13` NGO, `...14` municipality — all passwords `demo1234`.
-
-## 10. Build status
-
-`npm run build` completes cleanly (✓ built in ~1.5s) with zero warnings
-or errors. All routes, maps, notifications, i18n (EN/ने), dark/light
-mode, WebSocket toasts, routing, and skeletons are functional.
+- Login/auth, form POSTs, WebSocket push, and incident-claim flows
+  require a running MySQL+FastAPI backend. The API layer uses standard
+  promise `.then/.catch` and `.finally(setLoading(false))` so failure
+  states gracefully show existing empty states / toasts rather than
+  blank screens.
+- Recharts charts render but live data depends on `/api/incidents/stats/summary`.

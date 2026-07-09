@@ -1,10 +1,10 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import React from 'react'
+import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
-export default function BackButton({ to, label = "Back" }) {
-  const navigate = useNavigate();
+export default function BackButton({ to, label = 'Back' }) {
+  const navigate = useNavigate()
   return (
     <motion.button
       whileTap={{ scale: 0.95 }}
@@ -14,5 +14,5 @@ export default function BackButton({ to, label = "Back" }) {
       <ArrowLeft size={16} />
       {label}
     </motion.button>
-  );
+  )
 }

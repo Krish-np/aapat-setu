@@ -7,7 +7,6 @@ import api from '../lib/api'
 import { toast } from '../components/toaster'
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
-import BackButton from '../components/BackButton'
 import { useTheme } from '../store/theme'
 import { useTranslation } from 'react-i18next'
 import {
@@ -148,8 +147,7 @@ export default function Report() {
     (step === 3)
 
   return (
-    <div className="max-w-4xl mx-auto p-4 md:p-6">
-      <BackButton />
+    <div className="max-w-4xl">
       <div className="mb-6 mt-2">
         <h1 className="text-2xl md:text-3xl font-extrabold flex items-center gap-2"><AlertTriangle className="text-red-500"/> Report Emergency</h1>
         <p className="text-ink-500 dark:text-ink-400 text-sm mt-1">Share what's happening — AI will triage instantly.</p>

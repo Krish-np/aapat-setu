@@ -68,7 +68,7 @@ function Legend({ color, label }) {
 
 function HomeSkeleton() {
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
           <Skeleton className="h-8 w-56" />
@@ -167,7 +167,7 @@ export default function AppHome() {
   )
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 fade-in">
+    <div className="space-y-6 fade-in">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white break-words">

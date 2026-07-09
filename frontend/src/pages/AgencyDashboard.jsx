@@ -132,7 +132,7 @@ const ROLE_CONFIG = {
 
 function DashboardSkeleton() {
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5">
+    <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div className="space-y-2">
           <Skeleton className="h-8 w-72" />
@@ -311,7 +311,7 @@ export default function AgencyDashboard() {
   const sidebarIncidents = roleScoped ? active : relevantFocus
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-5 fade-in">
+    <div className="space-y-5 fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-ink-100 dark:bg-ink-800 grid place-items-center shrink-0">

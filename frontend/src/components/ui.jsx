@@ -20,12 +20,12 @@ export const Card = ({
   ...rest
 }) => {
   const baseCls = clsx(
-    'relative bg-white/90 dark:bg-ink-900/80 backdrop-blur-xl text-left',
-    'border border-ink-200/70 dark:border-ink-800/80',
-    'rounded-2xl shadow-sm shadow-ink-900/[0.04] transition-all duration-200',
+    'relative bg-white dark:bg-ink-900 text-left',
+    'border border-ink-100 dark:border-ink-800/80',
+    'rounded-xl shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200',
     padded && 'p-5 md:p-6',
     hover &&
-      'hover:shadow-lg hover:shadow-ink-900/[0.08] hover:-translate-y-0.5 hover:border-brand-300/60 dark:hover:border-brand-600/50 cursor-pointer',
+      'hover:shadow-[0_8px_24px_-8px_rgba(15,23,42,0.15)] hover:-translate-y-0.5 hover:border-ink-200 dark:hover:border-ink-700 cursor-pointer',
     onClick && 'cursor-pointer',
     className,
   )
@@ -84,28 +84,28 @@ export const Button = ({
   ...rest
 }) => {
   const sizes = {
-    xs: 'h-7 px-2.5 text-xs rounded-lg gap-1',
-    sm: 'h-9 px-3.5 text-sm rounded-lg gap-1.5',
-    md: 'h-10 px-4 text-sm rounded-xl gap-2',
-    lg: 'h-12 px-6 text-base rounded-xl gap-2',
-    icon: 'h-10 w-10 rounded-xl grid place-items-center',
-    iconSm: 'h-9 w-9 rounded-lg grid place-items-center',
+    xs: 'h-7 px-2.5 text-xs rounded-md gap-1',
+    sm: 'h-8 px-3 text-sm rounded-md gap-1.5',
+    md: 'h-9 px-4 text-sm rounded-lg gap-2',
+    lg: 'h-11 px-6 text-base rounded-lg gap-2',
+    icon: 'h-9 w-9 rounded-lg grid place-items-center',
+    iconSm: 'h-8 w-8 rounded-md grid place-items-center',
   }
   const variants = {
     primary:
-      'bg-gradient-to-b from-brand-500 to-brand-600 hover:from-brand-500 hover:to-brand-700 text-white shadow-md shadow-brand-600/25 ring-1 ring-inset ring-brand-400/30 active:shadow-sm',
+      'bg-brand-600 hover:bg-brand-700 text-white shadow-sm shadow-brand-600/20 active:shadow-none',
     secondary:
-      'bg-ink-100 hover:bg-ink-200 text-ink-800 dark:bg-ink-800 dark:hover:bg-ink-700 dark:text-white ring-1 ring-inset ring-ink-200 dark:ring-ink-700',
+      'bg-white border border-ink-200 hover:bg-ink-50 text-ink-800 dark:bg-ink-900 dark:border-ink-700 dark:hover:bg-ink-800 dark:text-white shadow-sm',
     ghost:
-      'border border-ink-200 dark:border-ink-700 bg-transparent hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200',
+      'bg-transparent hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200',
     subtle:
       'bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/20',
     danger:
-      'bg-gradient-to-b from-red-500 to-red-600 hover:to-red-700 text-white shadow-md shadow-red-600/25 ring-1 ring-inset ring-red-400/30',
+      'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-600/20',
     success:
-      'bg-gradient-to-b from-emerald-500 to-emerald-600 hover:to-emerald-700 text-white shadow-md shadow-emerald-600/25 ring-1 ring-inset ring-emerald-400/30',
+      'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20',
     warning:
-      'bg-gradient-to-b from-amber-400 to-amber-500 hover:to-amber-600 text-amber-950 shadow-md shadow-amber-500/25 ring-1 ring-inset ring-amber-300/40',
+      'bg-amber-500 hover:bg-amber-600 text-amber-950 shadow-sm shadow-amber-500/20',
     outline:
       'border border-brand-500/60 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 bg-transparent',
   }
@@ -133,8 +133,8 @@ export const Button = ({
 export const IconButton = ({ children, className = '', active = false, ...rest }) => (
   <button
     className={clsx(
-      'h-10 w-10 rounded-xl grid place-items-center transition-colors',
-      'text-ink-600 dark:text-ink-300',
+      'h-9 w-9 rounded-lg grid place-items-center transition-colors',
+      'text-ink-500 dark:text-ink-300',
       'hover:bg-ink-100 dark:hover:bg-ink-800 hover:text-ink-900 dark:hover:text-white',
       active && 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400',
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60',
