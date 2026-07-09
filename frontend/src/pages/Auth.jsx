@@ -51,6 +51,7 @@ export default function Auth() {
           <div style={{ display: 'inline-grid', placeItems: 'center', width: 60, height: 60, borderRadius: 16, background: 'linear-gradient(135deg,#ef4444,#b91c1c)', fontSize: 28, fontWeight: 800, color: 'white', boxShadow: '0 4px 16px rgba(239,68,68,0.4)' }}>S</div>
           <h1 style={{ margin: '14px 0 4px' }}>Aapat Setu</h1>
           <div className="text-dim" style={{ fontSize: 13 }}>AI-powered emergency coordination network</div>
+          <a href="/" className="text-dim" style={{ fontSize: 12, marginTop: 6, display: 'inline-block' }}>← Back to project website</a>
         </div>
 
         <div className="auth-tabs">

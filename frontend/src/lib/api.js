@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+// If hosted under /app/, we still call the API at the root /api
 const api = axios.create({ baseURL: '/' })
 
 api.interceptors.request.use((config) => {

@@ -62,6 +62,9 @@ export default function Layout({ children }) {
             onClick={() => { logout(); navigate('/login') }}>
             Log out
           </button>
+          <div style={{ textAlign: 'center', marginTop: 12, fontSize: 10, color: 'var(--text-dim)' }}>
+            Team Zero Day · HackFusion 2026
+          </div>
         </div>
       </aside>
       <main className="main">{children}</main>

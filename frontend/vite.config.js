@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  // Serve the SPA under /app/ so the landing page can live at /
+  base: '/app/',
   server: {
     port: 5173,
     host: true,
