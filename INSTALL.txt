@@ -1,0 +1,97 @@
+================================================================
+  PHOENIX CONSISTENCY PATCH  (SAFE — visual-only, no logic changes)
+================================================================
+
+WHAT THIS TOUCHES (3 files total — zero routes/API/state/form changes):
+
+  frontend/tailwind.config.js   ← Phoenix palette: ink canvas #edf2f9,
+                                   brand = EMERGENCY RED #dc2626 scale,
+                                   phoenix shadows, Inter font.
+  frontend/src/index.css        ← Phoenix base styles + a GLOBAL CONSISTENCY
+                                   OVERLAY that forces every existing page
+                                   (AppHome, AgencyDashboard, Report,
+                                   IncidentDetail, Resources, Crews, Tasks,
+                                   Alerts, Notifications, Knowledge, Admin,
+                                   MapPage, Incidents, Auth) to look Phoenix
+                                   WITHOUT touching their JSX.
+  frontend/src/components/ui.jsx← Reusable Phoenix primitives
+                                   (Card, Button, Input, Select, Badge,
+                                   StatCard, Skeleton, KPIStrip,
+                                   SectionCard, FilterBar, FormRow,
+                                   EmptyBlock, PageHeader-ready parts).
+
+DARK MODE and EN/ने LANGUAGE TOGGLE keep working (untouched).
+
+----------------------------------------------------------------
+INSTALL (Windows)
+----------------------------------------------------------------
+1. STOP the server: Ctrl+C in the run.bat window.
+
+2. EXTRACT this ZIP and MERGE the "frontend" folder into your project at
+     C:\Users\Hp\Desktop\git-hub\aapatsetu\
+   Click "Replace the files in the destination" when Windows asks.
+
+3. CLEAR CACHES (this is what prevents the "blank page / old map" bug):
+     cd /d C:\Users\Hp\Desktop\git-hub\aapatsetu
+     rmdir /s /q backend\static
+     rmdir /s /q frontend\node_modules\.vite
+
+4. RUN run.bat and wait until you see "✓ built in Xs" in the terminal.
+
+5. OPEN http://localhost:8000/ and HARD-REFRESH: Ctrl+Shift+R
+   (the browser also caches old CSS/JS — hard refresh is mandatory).
+
+If anything ever looks wrong, hit Ctrl+Shift+R twice first. If a page
+is blank, repeat step 3 — leftover backend/static chunks from older
+builds are the #1 cause.
+
+----------------------------------------------------------------
+WILL THIS BREAK MY APP?
+----------------------------------------------------------------
+No. None of the 3 files change routes, API calls, state (zustand),
+forms, WebSocket logic, auth, ORS map, Recharts charts, or i18n.
+- index.css only ADDS CSS; global overrides use element/class
+  selectors that are additive over your existing Tailwind classes.
+- ui.jsx only ADDS/UPDATES reusable presentational components; no
+  page JSX imports anything new from it that didn't exist before.
+- tailwind.config.js only changes color/shadow/font tokens that the
+  JSX already references via Tailwind classes like bg-brand-600.
+
+The only visible difference should be: light gray #edf2f9 background,
+white rounded-lg cards with soft phoenix shadow, Inter font, red
+(#dc2626) brand accents, consistent form controls/badges/tables
+everywhere.
+
+----------------------------------------------------------------
+REUSABLE COMPONENTS (for any NEW pages you build later)
+----------------------------------------------------------------
+import {
+  Card, Button, Badge, Input, Select, Textarea,
+  StatCard, Skeleton, Spinner, Progress, Avatar,
+  SectionCard,   // titled card w/ icon header + optional actions
+  KPIStrip,      // <KPIStrip items={[{label,value,icon,sub}]}/>
+  FilterBar,     // chip-row filter tabs
+  FormRow,       // labeled form row
+  EmptyBlock,    // empty-state card
+  SectionHeading, Divider, EmptyState, IconButton,
+} from '../components/ui'
+import PageHeader from '../components/PageHeader'
+
+Canonical page skeleton (matches Phoenix admin perfectly):
+
+  <PageHeader icon={Icon} title="Title" subtitle="..." actions={<Button>New</Button>}/>
+  <KPIStrip items={[
+    {label:'Total',  value:12, icon:<Users/>},
+    {label:'Active', value:3,  icon:<Activity/>, iconBg:'bg-amber-50 text-amber-600'},
+  ]}/>
+  <FilterBar options={[{value:'all',label:'All'},{value:'active',label:'Active'}]}
+             value={filter} onChange={setFilter}/>
+  <div className="grid lg:grid-cols-[1fr_360px] gap-4 items-start">
+    <SectionCard title="Items" icon={List}>...</SectionCard>
+    <SectionCard title="Add new" icon={Plus}>
+      <form className="space-y-3">
+        <FormRow label="Name"><Input/></FormRow>
+        <Button className="w-full">Save</Button>
+      </form>
+    </SectionCard>
+  </div>
