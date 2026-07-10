@@ -1,0 +1,78 @@
+[1/2] Building frontend...
+
+> frontend@0.0.0 build
+> vite build
+
+[1G[0K[36mvite v8.1.4 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming (36) [2msrc/components/AppShell.jsx[0m[2Ktransforming (102) [2mnode_modules/lucide-react/dist/esm/lucide-react.mjs[0m[2Ktransforming (186) [2mnode_modules/lucide-react/dist/esm/icons/square-chart-gan[2Ktransforming (904) [2mnode_modules/lucide-react/dist/esm/icons/chart-column-dec[2Ktransforming (905) [2mnode_modules/lucide-react/dist/esm/icons/chart-no-axes-co[2Ktransforming (906) [2mnode_modules/recharts/es6/state/selectors/combiners/combi[2Ktransforming (1911) [2mnode_modules/framer-motion/dist/es/events/add-pointer-ev[2Ktransforming (2373) [2mnode_modules/motion-dom/dist/es/animation/waapi/utils/ac[2Ktransforming (2856) [2mnode_modules/d3-array/src/identity.js[0m[2Ktransforming (2900) [2msrc/components/map-ui.css[0m[2Ktransforming (2901) [2msrc/index.css[0m[2K[32m✓[0m 2901 modules transformed.
+[2Krendering chunks (1)...[2Krendering chunks (2)...[2Krendering chunks (3)...[2Krendering chunks (4)...[2Krendering chunks (5)...[2Krendering chunks (6)...[2Krendering chunks (7)...[2Krendering chunks (8)...[2Krendering chunks (9)...[2Krendering chunks (10)...[2Krendering chunks (11)...[2Krendering chunks (12)...[2Krendering chunks (13)...[2Krendering chunks (14)...[2Krendering chunks (15)...[2Krendering chunks (16)...[2Krendering chunks (17)...[2Krendering chunks (18)...[2Krendering chunks (19)...[2Krendering chunks (20)...[2Krendering chunks (21)...[2Krendering chunks (22)...[2Krendering chunks (23)...[2Krendering chunks (24)...[2Krendering chunks (25)...[2Krendering chunks (26)...[2Krendering chunks (27)...[2Krendering chunks (28)...[2Krendering chunks (29)...[2Krendering chunks (30)...[2Krendering chunks (31)...[2Krendering chunks (32)...[2Krendering chunks (33)...[2Kcomputing gzip size...
+[2K[2m../backend/static/[0m[32mindex.html                           [0m[1;2m  1.24 kB[0m[2m │ gzip:   0.63 kB[0m
+[2m../backend/static/[0m[2massets/[0m[35mMap--aMT-vtv.css              [0m[1;2m  3.41 kB[0m[2m │ gzip:   1.07 kB[0m
+[2m../backend/static/[0m[2massets/[0m[35mindex-DqNBi6C-.css            [0m[1;2m 86.42 kB[0m[2m │ gzip:  14.87 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mplus-6jlqVqB-.js              [0m[1;2m  0.15 kB[0m[2m │ gzip:   0.15 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mclock-ayrfQsrm.js             [0m[1;2m  0.16 kB[0m[2m │ gzip:   0.16 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mtrending-up-B_NByWZE.js       [0m[1;2m  0.17 kB[0m[2m │ gzip:   0.16 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mRelativeTime-DtOMS1P2.js      [0m[1;2m  0.20 kB[0m[2m │ gzip:   0.18 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mtrash-2-rj3Q3JRo.js           [0m[1;2m  0.32 kB[0m[2m │ gzip:   0.21 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36minfo-CtvfGkIz.js              [0m[1;2m  0.32 kB[0m[2m │ gzip:   0.21 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mcar-DN81Ikr9.js               [0m[1;2m  0.40 kB[0m[2m │ gzip:   0.28 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mreact-Dbnu2scS.js             [0m[1;2m  0.65 kB[0m[2m │ gzip:   0.40 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mPageHeader-BHUCY7RI.js        [0m[1;2m  0.88 kB[0m[2m │ gzip:   0.49 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mhelpers-Czg2MHRy.js           [0m[1;2m  1.26 kB[0m[2m │ gzip:   0.62 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36museRelativeTime-Od1cysle.js   [0m[1;2m  1.84 kB[0m[2m │ gzip:   0.99 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mKnowledge-Cj0w_30b.js         [0m[1;2m  4.05 kB[0m[2m │ gzip:   1.91 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mMyReports-DmUqwIw_.js         [0m[1;2m  4.06 kB[0m[2m │ gzip:   1.65 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAnimatePresence-CQz4B8le.js   [0m[1;2m  4.14 kB[0m[2m │ gzip:   1.90 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAlerts-CbVK8BBc.js            [0m[1;2m  4.96 kB[0m[2m │ gzip:   1.87 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mIncidents-DMEeCie4.js         [0m[1;2m  6.26 kB[0m[2m │ gzip:   2.19 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mNotifications-A2ev7uKv.js     [0m[1;2m  6.42 kB[0m[2m │ gzip:   2.56 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mTasks-dy5kLs-q.js             [0m[1;2m  6.53 kB[0m[2m │ gzip:   2.53 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mMapPage-D81tYD19.js           [0m[1;2m  6.75 kB[0m[2m │ gzip:   2.57 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mResources-IYn1ctG7.js         [0m[1;2m  7.15 kB[0m[2m │ gzip:   2.49 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAdmin-DgJRLnKb.js             [0m[1;2m  7.19 kB[0m[2m │ gzip:   2.32 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAuth-C3ABpK64.js              [0m[1;2m  7.23 kB[0m[2m │ gzip:   2.37 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mCrews-we3uIS-q.js             [0m[1;2m  9.90 kB[0m[2m │ gzip:   3.13 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAppHome-BboRyo4K.js           [0m[1;2m 10.18 kB[0m[2m │ gzip:   3.16 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAgencyDashboard-CJp1syWy.js   [0m[1;2m 12.62 kB[0m[2m │ gzip:   4.04 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mIncidentDetail-dF24ZfPF.js    [0m[1;2m 12.71 kB[0m[2m │ gzip:   3.82 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mReport-OcH83rs5.js            [0m[1;2m 18.42 kB[0m[2m │ gzip:   5.99 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mMap-F-sK3qfj.js               [0m[1;2m 24.71 kB[0m[2m │ gzip:   8.12 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mapi-2zMGt1R0.js               [0m[1;2m 45.74 kB[0m[2m │ gzip:  17.41 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mcreateLucideIcon-5gylg8bU.js  [0m[1;2m142.72 kB[0m[2m │ gzip:  46.47 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mTileLayer-DhDmnlRQ.js         [0m[1;2m153.90 kB[0m[2m │ gzip:  45.16 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mAnalytics-CkMrkN7u.js         [0m[1;2m385.00 kB[0m[2m │ gzip: 109.47 kB[0m
+[2m../backend/static/[0m[2massets/[0m[36mindex-Cj6DDAQN.js             [0m[1;2m412.12 kB[0m[2m │ gzip: 125.04 kB[0m
+
+[32m✓ built in 1.97s[39m
+[1G[0K⠙[1G[0K[2/2] Starting server on port 5000...
+
+  Demo logins (password: demo1234)
+     Responder  : 9800000004
+     Volunteer  : 9800000002
+     Citizen    : 9800000001
+
+[32mINFO[0m:     Started server process [[36m2044[0m]
+[32mINFO[0m:     Waiting for application startup.
+[32mINFO[0m:     Application startup complete.
+[32mINFO[0m:     Uvicorn running on [1mhttp://0.0.0.0:5000[0m (Press CTRL+C to quit)
+[32mINFO[0m:     10.60.11.53:0 - "[1mGET / HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.11.53:0 - "[1mGET /assets/index-Cj6DDAQN.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.7.73:0 - "[1mGET /assets/react-Dbnu2scS.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.7.73:0 - "[1mGET /assets/index-DqNBi6C-.css HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.11.53:0 - "[1mGET /assets/createLucideIcon-5gylg8bU.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.11.53:0 - "[1mGET /assets/AnimatePresence-CQz4B8le.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.9.41:0 - "[1mGET /assets/api-2zMGt1R0.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.7.73:0 - "[1mGET /assets/info-CtvfGkIz.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     ('10.60.7.73', 0) - "WebSocket /ws" [accepted]
+[32mINFO[0m:     connection open
+[32mINFO[0m:     ('10.60.8.26', 0) - "WebSocket /ws" [accepted]
+[32mINFO[0m:     connection open
+[32mINFO[0m:     127.0.0.1:42334 - "[1mGET / HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42334 - "[1mGET /assets/index-Cj6DDAQN.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42352 - "[1mGET /assets/createLucideIcon-5gylg8bU.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42354 - "[1mGET /assets/AnimatePresence-CQz4B8le.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42340 - "[1mGET /assets/index-DqNBi6C-.css HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42362 - "[1mGET /assets/react-Dbnu2scS.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42376 - "[1mGET /assets/api-2zMGt1R0.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     127.0.0.1:42362 - "[1mGET /assets/info-CtvfGkIz.js HTTP/1.1[0m" [32m200 OK[0m
+[32mINFO[0m:     10.60.11.53:0 - "[1mGET /assets/Auth-C3ABpK64.js HTTP/1.1[0m" [32m200 OK[0m

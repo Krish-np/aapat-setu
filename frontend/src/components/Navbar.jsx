@@ -5,13 +5,12 @@ import { useTranslation } from 'react-i18next'
 import { useTheme } from '../store/theme'
 import { useAuth } from '../store/auth'
 import { Button, IconButton } from './ui'
+import logoImg from '../assets/logo.png'
 import {
   Sun,
   Moon,
-  Shield,
   Menu,
   X,
-  AlertTriangle,
   Sparkles,
   Users,
   MapPin,
@@ -38,9 +37,11 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 glass-strong border-b border-ink-200/60 dark:border-ink-800/60">
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center gap-4">
         <Link to="/" className="flex items-center gap-2.5 font-extrabold text-lg shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white grid place-items-center shadow-lg shadow-brand-600/25 ring-1 ring-inset ring-white/20">
-            <Shield size={18} />
-          </div>
+          <img
+            src={logoImg}
+            alt="Aapat Setu"
+            className="w-9 h-9 rounded-xl object-contain"
+          />
           <span className="hidden sm:block tracking-tight">
             <span className="text-ink-900 dark:text-white">
               {t('brand') || 'Aapat Setu'}

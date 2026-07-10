@@ -1,0 +1,87 @@
+[1/2] Building frontend...
+../backend/static/assets/index-sEzhfX9K.js             405.39 kB │ gzip: 123.30 kB
+
+✓ built in 1.96s
+[2/2] Starting server on port 5000...
+
+  Demo logins (password: demo1234)
+     Responder  : 9800000004
+     Volunteer  : 9800000002
+     Citizen    : 9800000001
+
+Traceback (most recent call last):
+  File [35m"<frozen runpy>"[0m, line [35m198[0m, in [35m_run_module_as_main[0m
+  File [35m"<frozen runpy>"[0m, line [35m88[0m, in [35m_run_code[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/__main__.py"[0m, line [35m4[0m, in [35m<module>[0m
+    [31muvicorn.main[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/click/core.py"[0m, line [35m1569[0m, in [35m__call__[0m
+    return [31mself.main[0m[1;31m(*args, **kwargs)[0m
+           [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/click/core.py"[0m, line [35m1490[0m, in [35mmain[0m
+    rv = self.invoke(ctx)
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/click/core.py"[0m, line [35m1353[0m, in [35minvoke[0m
+    return [31mctx.invoke[0m[1;31m(self.callback, **ctx.params)[0m
+           [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/click/core.py"[0m, line [35m907[0m, in [35minvoke[0m
+    return callback(*args, **kwargs)
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/main.py"[0m, line [35m412[0m, in [35mmain[0m
+    [31mrun[0m[1;31m([0m
+    [31m~~~[0m[1;31m^[0m
+        [1;31mapp,[0m
+        [1;31m^^^^[0m
+    ...<45 lines>...
+        [1;31mh11_max_incomplete_event_size=h11_max_incomplete_event_size,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/main.py"[0m, line [35m579[0m, in [35mrun[0m
+    [31mserver.run[0m[1;31m()[0m
+    [31m~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/server.py"[0m, line [35m66[0m, in [35mrun[0m
+    return [31masyncio.run[0m[1;31m(self.serve(sockets=sockets))[0m
+           [31m~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/nix/store/qzc04a3npl70cyyy6flnnrb2ig3kayxm-python3-3.13.11/lib/python3.13/asyncio/runners.py"[0m, line [35m195[0m, in [35mrun[0m
+    return [31mrunner.run[0m[1;31m(main)[0m
+           [31m~~~~~~~~~~[0m[1;31m^^^^^^[0m
+  File [35m"/nix/store/qzc04a3npl70cyyy6flnnrb2ig3kayxm-python3-3.13.11/lib/python3.13/asyncio/runners.py"[0m, line [35m118[0m, in [35mrun[0m
+    return [31mself._loop.run_until_complete[0m[1;31m(task)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^[0m
+  File [35m"uvloop/loop.pyx"[0m, line [35m1518[0m, in [35muvloop.loop.Loop.run_until_complete[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/server.py"[0m, line [35m70[0m, in [35mserve[0m
+    await self._serve(sockets)
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/server.py"[0m, line [35m77[0m, in [35m_serve[0m
+    [31mconfig.load[0m[1;31m()[0m
+    [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/config.py"[0m, line [35m435[0m, in [35mload[0m
+    self.loaded_app = [31mimport_from_string[0m[1;31m(self.app)[0m
+                      [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/importer.py"[0m, line [35m22[0m, in [35mimport_from_string[0m
+    raise exc from None
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/uvicorn/importer.py"[0m, line [35m19[0m, in [35mimport_from_string[0m
+    module = importlib.import_module(module_str)
+  File [35m"/nix/store/qzc04a3npl70cyyy6flnnrb2ig3kayxm-python3-3.13.11/lib/python3.13/importlib/__init__.py"[0m, line [35m88[0m, in [35mimport_module[0m
+    return [31m_bootstrap._gcd_import[0m[1;31m(name[level:], package, level)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"<frozen importlib._bootstrap>"[0m, line [35m1387[0m, in [35m_gcd_import[0m
+  File [35m"<frozen importlib._bootstrap>"[0m, line [35m1360[0m, in [35m_find_and_load[0m
+  File [35m"<frozen importlib._bootstrap>"[0m, line [35m1331[0m, in [35m_find_and_load_unlocked[0m
+  File [35m"<frozen importlib._bootstrap>"[0m, line [35m935[0m, in [35m_load_unlocked[0m
+  File [35m"<frozen importlib._bootstrap_external>"[0m, line [35m1023[0m, in [35mexec_module[0m
+  File [35m"<frozen importlib._bootstrap>"[0m, line [35m488[0m, in [35m_call_with_frames_removed[0m
+  File [35m"/home/runner/workspace/backend/app/main.py"[0m, line [35m8[0m, in [35m<module>[0m
+    from .database import Base, engine, SessionLocal, _database_exists
+  File [35m"/home/runner/workspace/backend/app/database.py"[0m, line [35m10[0m, in [35m<module>[0m
+    engine = create_engine(
+        db_url,
+    ...<3 lines>...
+        pool_recycle=1800,
+    )
+  File [35m"<string>"[0m, line [35m2[0m, in [35mcreate_engine[0m
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/sqlalchemy/util/deprecations.py"[0m, line [35m281[0m, in [35mwarned[0m
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/sqlalchemy/engine/create.py"[0m, line [35m599[0m, in [35mcreate_engine[0m
+    dbapi = dbapi_meth(**dbapi_args)
+  File [35m"/home/runner/workspace/.pythonlibs/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py"[0m, line [35m690[0m, in [35mimport_dbapi[0m
+    import psycopg2
+[1;35mModuleNotFoundError[0m: [35mNo module named 'psycopg2'[0m

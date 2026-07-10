@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../store/auth'
 import { Avatar, IconButton } from './ui'
+import logoImg from '../assets/logo.png'
 import {
-  Shield,
   Home,
   AlertTriangle,
   MapPin,
@@ -123,16 +123,18 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onClo
         {/* Brand */}
         <div className="h-16 px-4 flex items-center gap-3 border-b border-ink-200/70 dark:border-ink-800/70 shrink-0">
           <Link to="/app" className="flex items-center gap-2.5 min-w-0" onClick={onCloseMobile}>
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white grid place-items-center shadow-md shadow-brand-600/25 shrink-0">
-              <Shield size={18}/>
-            </div>
+            <img
+              src={logoImg}
+              alt="Aapat Setu"
+              className="w-9 h-9 rounded-lg object-contain shrink-0"
+            />
             {!collapsed && (
               <div className="min-w-0">
                 <div className="font-extrabold text-ink-900 dark:text-white tracking-tight truncate">
                   {t('brand')}
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-widest text-ink-400 -mt-0.5">
-                  {t('brand_sub')}
+                  Emergency Response
                 </div>
               </div>
             )}
@@ -141,35 +143,32 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onClo
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-2 py-3 scrollbar-thin">
-          <NavSection label={t('nav.overview')} collapsed={collapsed}>
+          <NavSection label="Overview" collapsed={collapsed}>
             {(isCitizen || isVolunteer) && (
               <NavItem to="/app/home" icon={Home} label={t('nav.home')} collapsed={collapsed} onClick={onCloseMobile}/>
             )}
             {isAgency && (
-              <NavItem to="/app/command" icon={Target} label={t('nav.command')} collapsed={collapsed} onClick={onCloseMobile}/>
+              <NavItem to="/app/command" icon={Target} label={t('nav.command','Command')} collapsed={collapsed} onClick={onCloseMobile}/>
             )}
             {isAdmin && (
               <NavItem to="/app/admin" icon={LayoutDashboard} label={t('nav.admin')} collapsed={collapsed} onClick={onCloseMobile}/>
             )}
           </NavSection>
 
-          <NavSection label={t('nav.response')} collapsed={collapsed}>
+          <NavSection label="Operations" collapsed={collapsed}>
             <NavItem to="/app/incidents" icon={ClipboardList} label={t('nav.incidents')} collapsed={collapsed} onClick={onCloseMobile}/>
             <NavItem to="/app/map" icon={MapPin} label={t('nav.map')} collapsed={collapsed} onClick={onCloseMobile}/>
-            {isCitizen && (
+            {user.role === 'citizen' && (
               <NavItem to="/app/report" icon={AlertTriangle} label={t('nav.report')} collapsed={collapsed} onClick={onCloseMobile}/>
             )}
-            {isCitizen && (
-              <NavItem to="/app/my-reports" icon={ClipboardList} label={t('app.my_reports')} collapsed={collapsed} onClick={onCloseMobile}/>
-            )}
-            {!isCitizen && (
+            {user.role !== 'citizen' && (
               <NavItem to="/app/tasks" icon={Megaphone} label={t('nav.tasks')} collapsed={collapsed} onClick={onCloseMobile}/>
             )}
             <NavItem to="/app/alerts" icon={Megaphone} label={t('nav.alerts')} collapsed={collapsed} onClick={onCloseMobile}/>
           </NavSection>
 
           {(isAgency || isVolunteer) && (
-            <NavSection label={t('nav.resources')} collapsed={collapsed}>
+            <NavSection label="Resources" collapsed={collapsed}>
               <NavItem to="/app/resources" icon={Package} label={t('nav.resources')} collapsed={collapsed} onClick={onCloseMobile}/>
               {(isMunicipality || isAdmin || user.role === 'responder') && (
                 <NavItem to="/app/crews" icon={Users} label={t('nav.crews')} collapsed={collapsed} onClick={onCloseMobile}/>
@@ -178,12 +177,12 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onClo
           )}
 
           {(isAdmin || user.role === 'responder' || isMunicipality) && (
-            <NavSection label={t('nav.insights')} collapsed={collapsed}>
+            <NavSection label="Insights" collapsed={collapsed}>
               <NavItem to="/app/analytics" icon={BarChart3} label={t('nav.analytics')} collapsed={collapsed} onClick={onCloseMobile}/>
             </NavSection>
           )}
 
-          <NavSection label={t('nav.safety')} collapsed={collapsed}>
+          <NavSection label="Safety" collapsed={collapsed}>
             <NavItem to="/app/knowledge" icon={BookOpen} label={t('nav.knowledge')} collapsed={collapsed} onClick={onCloseMobile}/>
           </NavSection>
         </nav>
@@ -203,12 +202,12 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onClo
               <IconButton title={theme === 'dark' ? t('nav.light_mode') : t('nav.dark_mode')} onClick={toggle}>
                 {theme === 'dark' ? <Sun size={17}/> : <Moon size={17}/>}
               </IconButton>
-              <IconButton title={t('nav.logout')} onClick={() => { logout(); navigate('/') }}
+              <IconButton title="Sign out" onClick={() => { logout(); navigate('/') }}
                 className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400">
                 <LogOut size={16}/>
               </IconButton>
               <div className="w-6 h-px bg-ink-200 dark:bg-ink-800 my-0.5"/>
-              <IconButton title={t('sidebar.expand')} onClick={onToggle}>
+              <IconButton title="Expand sidebar" onClick={onToggle}>
                 <PanelLeftOpen size={17}/>
               </IconButton>
             </div>
@@ -228,7 +227,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onClo
                 <IconButton title={theme === 'dark' ? t('nav.light_mode') : t('nav.dark_mode')} onClick={toggle}>
                   {theme === 'dark' ? <Sun size={17}/> : <Moon size={17}/>}
                 </IconButton>
-                <IconButton title={t('sidebar.collapse')} onClick={onToggle} className="ml-auto">
+                <IconButton title="Collapse sidebar" onClick={onToggle} className="ml-auto">
                   <PanelLeftClose size={17}/>
                 </IconButton>
               </div>
@@ -242,7 +241,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onClo
                   </div>
                   <div className="text-[10px] text-ink-500 capitalize truncate">{roleLabel}</div>
                 </div>
-                <IconButton title={t('nav.logout')} onClick={() => { logout(); navigate('/') }}
+                <IconButton title="Sign out" onClick={() => { logout(); navigate('/') }}
                   className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400">
                   <LogOut size={15}/>
                 </IconButton>

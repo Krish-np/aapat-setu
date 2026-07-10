@@ -1,1271 +1,618 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { motion, useReducedMotion } from "framer-motion";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { motion } from 'framer-motion'
+import { Button, Card, SectionHeading } from '../components/ui'
+import logoImg from '../assets/logo.png'
 import {
-  Activity,
-  AlertTriangle,
-  Ambulance,
-  ArrowRight,
-  BarChart3,
-  Bell,
-  Bot,
-  Brain,
-  Building2,
-  Check,
-  CheckCircle2,
-  ChevronRight,
-  Clock3,
-  Cpu,
-  Eye,
-  Flame,
-  Gauge,
-  HandHeart,
-  Hospital,
-  Image as ImageIcon,
-  Landmark,
-  Languages,
-  LockKeyhole,
-  Map as MapIcon,
-  MapPin,
-  Mic,
-  Radio,
-  Route,
-  Send,
-  Shield,
-  Siren,
-  Sparkles,
-  UserCog,
-  Users,
-  Workflow,
-  Zap,
-} from "lucide-react";
+  AlertTriangle, Shield, Mic, Image as ImageIcon, Map, Brain, Radio,
+  Hospital, Building2, Users, Flame, Landmark, HandHeart, UserCog,
+  Gauge, Workflow, Languages, Eye, Bell, BarChart3,
+  Zap, CheckCircle2, ChevronRight, Phone, Cpu, Bot,
+  Sparkles, LifeBuoy, ArrowRight,
+} from 'lucide-react'
 
-const FEATURE_META = {
-  report: {
-    icon: Send,
-    title: "Fast, guided reporting",
-    desc: "Share location, voice, text, and images in one focused emergency flow.",
-  },
-  ai: {
-    icon: Bot,
-    title: "AI-assisted triage",
-    desc: "Turn incoming reports into concise, structured incident briefings.",
-  },
-  vision: {
-    icon: Eye,
-    title: "Visual damage analysis",
-    desc: "Identify visible hazards, damage, and response needs from submitted media.",
-  },
-  map: {
-    icon: MapIcon,
-    title: "Live operating map",
-    desc: "See incidents, teams, hospitals, shelters, and supplies in one shared view.",
-  },
-  cmd: {
-    icon: Gauge,
-    title: "Command workspace",
-    desc: "Prioritize incidents and coordinate actions without losing context.",
-  },
-  risk: {
-    icon: Cpu,
-    title: "Risk intelligence",
-    desc: "Surface severity, confidence, urgency, and potential escalation early.",
-  },
-  resource: {
-    icon: Workflow,
-    title: "Resource matching",
-    desc: "Recommend the closest suitable people, vehicles, facilities, and supplies.",
-  },
-  alerts: {
-    icon: Radio,
-    title: "Targeted alerts",
-    desc: "Send useful, location-aware instructions instead of broad notification noise.",
-  },
-  analytics: {
-    icon: BarChart3,
-    title: "Operational analytics",
-    desc: "Understand response times, bottlenecks, demand, and outcomes.",
-  },
-  realtime: {
-    icon: Bell,
-    title: "Real-time updates",
-    desc: "Keep every authorized role aligned as incident status changes.",
-  },
-};
-
-const FEATURE_GROUPS = [
-  {
-    eyebrow: "Capture",
-    title: "Clear reports, even under pressure",
-    desc: "A short, accessible reporting experience helps people share the information responders need most.",
-    tone: "from-red-500/15 to-orange-500/5 text-red-600 dark:text-red-400",
-    keys: ["report", "ai", "vision"],
-  },
-  {
-    eyebrow: "Understand",
-    title: "One live operating picture",
-    desc: "Teams work from the same map, risk signals, updates, and verified incident context.",
-    tone: "from-blue-500/15 to-cyan-500/5 text-blue-600 dark:text-blue-400",
-    keys: ["map", "cmd", "risk", "realtime"],
-  },
-  {
-    eyebrow: "Respond",
-    title: "Coordinate the right response",
-    desc: "Route alerts, tasks, resources, and decisions to the people who can act.",
-    tone: "from-emerald-500/15 to-teal-500/5 text-emerald-600 dark:text-emerald-400",
-    keys: ["resource", "alerts", "analytics"],
-  },
-];
-
-const ROLE_META = {
-  citizen: {
-    icon: Users,
-    name: "Citizen",
-    desc: "Report incidents, receive verified guidance, and follow local updates.",
-    tone: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300",
-  },
-  volunteer: {
-    icon: HandHeart,
-    name: "Volunteer",
-    desc: "Discover verified needs and coordinate safe community support.",
-    tone: "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300",
-  },
-  responder: {
-    icon: Shield,
-    name: "Responder",
-    desc: "Receive assignments, routes, context, and live incident updates.",
-    tone: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-300",
-  },
-  hospital: {
-    icon: Hospital,
-    name: "Hospital",
-    desc: "Share capacity and prepare teams before patients arrive.",
-    tone: "bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-300",
-  },
-  police: {
-    icon: Landmark,
-    name: "Police",
-    desc: "Coordinate public safety, access control, and field verification.",
-    tone: "bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300",
-  },
-  fire: {
-    icon: Flame,
-    name: "Fire service",
-    desc: "See hazard context, routes, and nearby support resources.",
-    tone: "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-300",
-  },
-  ngo: {
-    icon: HandHeart,
-    name: "NGO",
-    desc: "Coordinate relief, shelter, supplies, and community assistance.",
-    tone: "bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300",
-  },
-  municipality: {
-    icon: Building2,
-    name: "Municipality",
-    desc: "Maintain a local operating picture and coordinate public services.",
-    tone: "bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300",
-  },
-  admin: {
-    icon: UserCog,
-    name: "Administrator",
-    desc: "Manage access, workflows, data quality, and system oversight.",
-    tone: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-  },
-};
-
-const WORKFLOW_FALLBACK = [
-  {
-    title: "Report",
-    desc: "A person shares the location, situation, media, and immediate needs.",
-  },
-  {
-    title: "Triage",
-    desc: "AI structures the report while authorized teams verify urgency and context.",
-  },
-  {
-    title: "Coordinate",
-    desc: "The platform recommends resources, alerts relevant roles, and creates tasks.",
-  },
-  {
-    title: "Respond",
-    desc: "Teams act with live routes and updates, then close the loop with outcomes.",
-  },
-];
-
-const BENEFITS_FALLBACK = [
-  {
-    title: "Faster shared awareness",
-    desc: "Replace fragmented calls and messages with one current incident record.",
-  },
-  {
-    title: "Better prioritization",
-    desc: "Help teams focus on urgent, high-impact situations first.",
-  },
-  {
-    title: "Less coordination friction",
-    desc: "Give every authorized role the context needed to act confidently.",
-  },
-  {
-    title: "Safer public guidance",
-    desc: "Deliver verified, location-aware instructions during uncertain events.",
-  },
-  {
-    title: "More accountable response",
-    desc: "Track decisions, assignments, status changes, and outcomes.",
-  },
-  {
-    title: "Stronger preparedness",
-    desc: "Use operational data to improve plans, coverage, and resource placement.",
-  },
-];
-
-const FUTURE_FALLBACK = [
-  "Offline-first emergency reporting",
-  "Cell-broadcast and SMS alert delivery",
-  "Predictive hazard and demand modeling",
-  "Drone and IoT sensor integrations",
-  "Regional mutual-aid coordination",
-  "Open standards for agency interoperability",
-];
-
-const AI_CAPABILITIES = [
-  {
-    icon: Mic,
-    text: "Speech-to-text, language detection, and Nepali translation",
-  },
-  {
-    icon: ImageIcon,
-    text: "Image analysis for visible fire, flood, damage, and hazards",
-  },
-  { icon: Brain, text: "Severity, confidence, urgency, and risk scoring" },
-  { icon: Workflow, text: "Resource and responder recommendations" },
-  { icon: Languages, text: "English and Nepali operational summaries" },
-  {
-    icon: Eye,
-    text: "Potential duplicate detection using place and report similarity",
-  },
-];
-
-function Reveal({ children, className = "", delay = 0, y = 18 }) {
-  const reduceMotion = useReducedMotion();
-
+/* ------------------------------------------------------------------
+ * Small presentational helpers (local to Landing; do NOT leak globally)
+ * ------------------------------------------------------------------ */
+const FeatureIcon = ({ children, tone = 'brand' }) => {
+  const tones = {
+    brand:   'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300',
+    purple:  'bg-purple-50 text-purple-600 dark:bg-purple-500/15 dark:text-purple-300',
+    blue:    'bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+    amber:   'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+    emerald: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+  }
   return (
-    <motion.div
-      className={className}
-      initial={reduceMotion ? false : { opacity: 0, y }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div className={`w-11 h-11 rounded-xl grid place-items-center ${tones[tone] || tones.brand}`}>
       {children}
-    </motion.div>
-  );
-}
-
-function SectionIntro({ eyebrow, title, sub, align = "center", id }) {
-  const centered = align === "center";
-
-  return (
-    <div className={centered ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}>
-      <div className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
-        {eyebrow}
-      </div>
-      <h2
-        id={id}
-        className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl dark:text-white"
-      >
-        {title}
-      </h2>
-      {sub && (
-        <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg dark:text-slate-300">
-          {sub}
-        </p>
-      )}
     </div>
-  );
+  )
 }
 
-function PrimaryLink({ to, children, className = "" }) {
-  return (
-    <Link
-      to={to}
-      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-red-600/20 transition hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950 ${className}`}
-    >
-      {children}
-    </Link>
-  );
+const roleStyles = {
+  citizen:      { Icon: Users,       gradient: 'from-blue-500/20 to-cyan-500/20',    text: 'text-blue-600 dark:text-blue-400'         },
+  volunteer:    { Icon: HandHeart,   gradient: 'from-emerald-500/20 to-teal-500/20', text: 'text-emerald-600 dark:text-emerald-400'   },
+  responder:    { Icon: AlertTriangle, gradient: 'from-red-500/20 to-orange-500/20',   text: 'text-red-600 dark:text-red-400'           },
+  hospital:     { Icon: Hospital,    gradient: 'from-pink-500/20 to-rose-500/20',    text: 'text-pink-600 dark:text-pink-400'         },
+  police:       { Icon: Landmark,    gradient: 'from-slate-500/20 to-ink-500/20',    text: 'text-slate-700 dark:text-slate-300'       },
+  fire:         { Icon: Flame,       gradient: 'from-orange-500/20 to-red-500/20',   text: 'text-orange-600 dark:text-orange-400'     },
+  ngo:          { Icon: HandHeart,   gradient: 'from-purple-500/20 to-violet-500/20',text: 'text-purple-600 dark:text-purple-400'     },
+  municipality: { Icon: Building2,   gradient: 'from-indigo-500/20 to-blue-500/20',  text: 'text-indigo-600 dark:text-indigo-400'     },
+  admin:        { Icon: UserCog,     gradient: 'from-gray-500/20 to-slate-500/20',   text: 'text-gray-700 dark:text-gray-300'         },
 }
 
-function SecondaryLink({ to, children, className = "" }) {
+const containerClass = 'max-w-7xl mx-auto px-4 sm:px-6'
+
+/* Section wrapper — keeps vertical rhythm consistent */
+const Section = ({ id, className = '', children, bg = 'plain' }) => {
+  const bgs = {
+    plain: '',
+    muted: 'bg-ink-50/60 dark:bg-ink-900/30',
+    red:   'bg-gradient-to-b from-brand-50/70 to-transparent dark:from-brand-500/5 dark:to-transparent',
+    ai:    'relative overflow-hidden bg-gradient-to-br from-purple-50 via-white to-blue-50/60 dark:from-purple-500/5 dark:via-ink-950 dark:to-blue-500/5',
+  }
   return (
-    <Link
-      to={to}
-      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-extrabold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:focus:ring-offset-slate-950 ${className}`}
-    >
-      {children}
-    </Link>
-  );
-}
-
-function PreviewPin({ top, left, severity = "critical", label }) {
-  const colors = {
-    critical: "bg-red-500 shadow-red-500/35",
-    high: "bg-orange-500 shadow-orange-500/35",
-    moderate: "bg-amber-500 shadow-amber-500/35",
-    low: "bg-emerald-500 shadow-emerald-500/35",
-  };
-
-  return (
-    <div
-      className="absolute -translate-x-1/2 -translate-y-full"
-      style={{ top, left }}
-      aria-label={label}
-    >
-      {severity === "critical" && (
-        <span className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-red-500/25" />
-      )}
-      <span
-        className={`relative grid h-9 w-9 place-items-center rounded-full border-[3px] border-white text-white shadow-lg ${colors[severity]}`}
-      >
-        {severity === "low" ? (
-          <Check size={16} strokeWidth={3} />
-        ) : (
-          <AlertTriangle size={15} strokeWidth={2.5} />
-        )}
-      </span>
-      <span
-        className={`mx-auto -mt-1.5 block h-3 w-3 rotate-45 border-b-2 border-r-2 border-white ${colors[severity].split(" ")[0]}`}
-      />
-    </div>
-  );
-}
-
-function CommandCenterPreview() {
-  return (
-    <div className="relative overflow-hidden rounded-[28px] border border-slate-700/70 bg-slate-950 text-white shadow-2xl shadow-slate-950/30">
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3.5 sm:px-5">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-red-500 to-orange-500 shadow-lg shadow-red-500/20">
-            <Shield size={18} />
-          </div>
-          <div className="min-w-0">
-            <div className="truncate text-sm font-extrabold">
-              Emergency operations
-            </div>
-            <div className="text-[10px] font-semibold text-slate-400">
-              Kathmandu command view
-            </div>
-          </div>
-        </div>
-        <div className="ml-3 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-emerald-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,.12)]" />
-          Live
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-2 p-3 sm:gap-3 sm:p-4">
-        {[
-          {
-            value: "03",
-            label: "Critical",
-            color: "text-red-400",
-            icon: Siren,
-          },
-          {
-            value: "12",
-            label: "Active",
-            color: "text-amber-300",
-            icon: Activity,
-          },
-          {
-            value: "47",
-            label: "Resolved",
-            color: "text-emerald-300",
-            icon: CheckCircle2,
-          },
-        ].map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={stat.label}
-              className="rounded-xl border border-white/10 bg-white/[0.045] p-2.5 sm:p-3"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <strong
-                  className={`text-xl font-black sm:text-2xl ${stat.color}`}
-                >
-                  {stat.value}
-                </strong>
-                <Icon size={14} className="hidden text-slate-500 sm:block" />
-              </div>
-              <div className="mt-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 sm:text-[10px]">
-                {stat.label}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="px-3 pb-3 sm:px-4 sm:pb-4">
-        <div
-          className="relative h-[310px] overflow-hidden rounded-2xl border border-white/10 bg-[#111f32]"
-          role="img"
-          aria-label="Illustration of a live emergency operations map"
-        >
-          <div
-            className="absolute inset-0 opacity-35"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.12) 1px,transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
-
-          <svg
-            viewBox="0 0 600 310"
-            className="absolute inset-0 h-full w-full"
-            aria-hidden="true"
-          >
-            <path
-              d="M-20 218C82 177 116 231 207 190s130-22 178-72S493 72 626 95"
-              fill="none"
-              stroke="#26384e"
-              strokeWidth="28"
-            />
-            <path
-              d="M-20 218C82 177 116 231 207 190s130-22 178-72S493 72 626 95"
-              fill="none"
-              stroke="#475569"
-              strokeWidth="3"
-              strokeDasharray="8 8"
-              opacity=".7"
-            />
-            <path
-              d="M122-20c28 80 7 139 55 189s74 82 74 165"
-              fill="none"
-              stroke="#26384e"
-              strokeWidth="22"
-            />
-            <path
-              d="M122-20c28 80 7 139 55 189s74 82 74 165"
-              fill="none"
-              stroke="#475569"
-              strokeWidth="2.5"
-              strokeDasharray="7 8"
-              opacity=".65"
-            />
-            <path
-              d="M449-10c-37 75-13 120-61 176s-92 76-106 154"
-              fill="none"
-              stroke="#26384e"
-              strokeWidth="18"
-            />
-            <path
-              d="M449-10c-37 75-13 120-61 176s-92 76-106 154"
-              fill="none"
-              stroke="#475569"
-              strokeWidth="2"
-              strokeDasharray="6 8"
-              opacity=".65"
-            />
-            <path
-              d="M82 76c97 33 158 3 225 35s117 94 228 98"
-              fill="none"
-              stroke="#1d4ed8"
-              strokeWidth="5"
-              strokeLinecap="round"
-            />
-            <path
-              d="M82 76c97 33 158 3 225 35s117 94 228 98"
-              fill="none"
-              stroke="#93c5fd"
-              strokeWidth="2"
-              strokeDasharray="1 9"
-              strokeLinecap="round"
-            />
-          </svg>
-
-          <PreviewPin
-            top="31%"
-            left="28%"
-            severity="critical"
-            label="Critical incident"
-          />
-          <PreviewPin
-            top="55%"
-            left="58%"
-            severity="high"
-            label="High-severity incident"
-          />
-          <PreviewPin
-            top="42%"
-            left="78%"
-            severity="moderate"
-            label="Moderate incident"
-          />
-          <PreviewPin
-            top="72%"
-            left="35%"
-            severity="low"
-            label="Resolved incident"
-          />
-
-          <div
-            className="absolute right-[8%] top-[13%] grid h-9 w-9 place-items-center rounded-xl border-2 border-white bg-pink-600 text-white shadow-lg"
-            aria-label="Hospital"
-          >
-            <Hospital size={16} />
-          </div>
-          <div
-            className="absolute bottom-[24%] left-[9%] grid h-9 w-9 place-items-center rounded-xl border-2 border-white bg-blue-600 text-white shadow-lg"
-            aria-label="Response unit"
-          >
-            <Ambulance size={16} />
-          </div>
-
-          <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2.5 rounded-xl border border-white/10 bg-slate-950/90 p-2.5 shadow-xl backdrop-blur-md">
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-violet-500/20 text-violet-300">
-              <Sparkles size={15} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[11px] font-extrabold">
-                AI triage complete
-              </div>
-              <div className="truncate text-[9px] text-slate-400">
-                Flood · Critical · 3 units recommended
-              </div>
-            </div>
-            <div className="shrink-0 rounded-md bg-emerald-400/10 px-2 py-1 text-[9px] font-black text-emerald-300">
-              ETA 4m
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    <section id={id} className={`py-16 md:py-24 ${bgs[bg] || ''} ${className}`}>
+      <div className={containerClass}>{children}</div>
+    </section>
+  )
 }
 
 export default function Landing() {
-  const { t } = useTranslation();
-  const reduceMotion = useReducedMotion();
+  const { t } = useTranslation()
 
-  const tr = (key, fallback) => {
-    const value = t(key, { defaultValue: fallback });
-    return typeof value === "string" ? value : fallback;
-  };
+  const features = [
+    { icon: <AlertTriangle size={22}/>, k: 'report',    tone: 'brand'   },
+    { icon: <Bot size={22}/>,          k: 'ai',        tone: 'purple'  },
+    { icon: <ImageIcon size={22}/>,    k: 'vision',    tone: 'blue'    },
+    { icon: <Map size={22}/>,          k: 'map',       tone: 'emerald' },
+    { icon: <Gauge size={22}/>,        k: 'cmd',       tone: 'brand'   },
+    { icon: <Cpu size={22}/>,          k: 'risk',      tone: 'amber'   },
+    { icon: <Workflow size={22}/>,     k: 'resource',  tone: 'blue'    },
+    { icon: <Radio size={22}/>,        k: 'alerts',    tone: 'purple'  },
+    { icon: <BarChart3 size={22}/>,    k: 'analytics', tone: 'emerald' },
+    { icon: <Bell size={22}/>,         k: 'realtime',  tone: 'amber'   },
+  ]
 
-  const translatedList = (key, fallback) => {
-    const value = t(key, { returnObjects: true, defaultValue: fallback });
-    return Array.isArray(value) ? value : fallback;
-  };
+  const roles = ['citizen','volunteer','responder','hospital','police','fire','ngo','municipality','admin']
+  const benefits = t('benefits.items', { returnObjects: true }) || []
+  const futureItems = t('future.items', { returnObjects: true }) || []
+  const steps = t('workflow.steps', { returnObjects: true }) || []
 
-  const workflow = translatedList("workflow.steps", WORKFLOW_FALLBACK);
-  const benefits = translatedList("benefits.items", BENEFITS_FALLBACK);
-  const futureItems = translatedList("future.items", FUTURE_FALLBACK);
-  const roles = Object.keys(ROLE_META);
+  const aiCaps = [
+    { icon:<Mic size={18}/>,       label:'Speech-to-text, language detection, and instant Nepali translation' },
+    { icon:<ImageIcon size={18}/>, label:'Image & video analysis — detects fire, flood, damage, and casualties' },
+    { icon:<Brain size={18}/>,     label:'Severity, risk score, and confidence estimates within seconds' },
+    { icon:<Workflow size={18}/>,  label:'Resource recommendation — ambulance, fire, police, NGO, shelter' },
+    { icon:<Languages size={18}/>, label:'English ↔ Nepali translation for voice, text, and public alerts' },
+    { icon:<Eye size={18}/>,       label:'Duplicate detection via location + semantic similarity' },
+  ]
 
   return (
-    <div className="min-h-screen overflow-hidden bg-white text-slate-950 selection:bg-red-200 selection:text-red-950 dark:bg-slate-950 dark:text-white">
-      <main>
-        <section className="relative isolate overflow-hidden pb-20 pt-16 sm:pb-24 sm:pt-24 lg:pb-28 lg:pt-28">
-          <div className="absolute inset-0 -z-20 bg-[linear-gradient(to_bottom,#f8fafc,white_62%)] dark:bg-[linear-gradient(to_bottom,#020617,#020617)]" />
-          <div
-            className="absolute inset-0 -z-10 opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_85%)] dark:opacity-20"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(100,116,139,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(100,116,139,.14) 1px,transparent 1px)",
-              backgroundSize: "44px 44px",
-            }}
-            aria-hidden="true"
-          />
-          <div
-            className="absolute -left-48 top-10 -z-10 h-96 w-96 rounded-full bg-blue-400/15 blur-3xl dark:bg-blue-500/10"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute -right-48 top-0 -z-10 h-[30rem] w-[30rem] rounded-full bg-red-400/15 blur-3xl dark:bg-red-500/10"
-            aria-hidden="true"
-          />
+    <div className="min-h-screen">
+      {/* ================================================================ HERO */}
+      <section className="relative overflow-hidden pt-16 md:pt-24 pb-20 md:pb-28 landing-hero">
+        <div className="absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]" aria-hidden/>
+        <div aria-hidden className="absolute -top-32 -right-32 w-[480px] h-[480px] bg-brand-500/15 rounded-full blur-3xl"/>
+        <div aria-hidden className="absolute -bottom-40 -left-40 w-[520px] h-[520px] bg-amber-500/10 rounded-full blur-3xl"/>
 
-          <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-6 lg:grid-cols-[1.02fr_.98fr] lg:gap-16 lg:px-8">
-            <motion.div
-              initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-              animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-800 shadow-sm dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-                <span className="relative flex h-2 w-2" aria-hidden="true">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-50" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                </span>
-                {tr("hero.pill_live", "Live emergency coordination network")}
+        <div className={`${containerClass} relative grid lg:grid-cols-2 gap-10 lg:gap-16 items-center`}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55 }}
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs font-semibold mb-6">
+              <span className="live-dot" aria-hidden/>
+              <span className="text-ink-700 dark:text-ink-200">{t('hero.pill_live')}</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] text-ink-900 dark:text-white">
+              {t('hero.title')}{' '}
+              <span className="gradient-text">{t('hero.title_gradient')}</span>
+            </h1>
+
+            <p className="mt-5 md:mt-6 text-base md:text-lg text-ink-600 dark:text-ink-300 max-w-xl leading-relaxed">
+              {t('hero.subtitle')}
+            </p>
+
+            <div className="mt-7 md:mt-8 flex flex-wrap gap-3">
+              <Link to="/app/report">
+                <Button size="lg" className="text-base h-12 px-6 shadow-lg shadow-brand-600/25">
+                  <AlertTriangle size={19}/> {t('hero.cta_report')}
+                </Button>
+              </Link>
+              <Link to="/app/login">
+                <Button size="lg" variant="secondary" className="text-base h-12 px-6">
+                  {t('hero.cta_app')} <ChevronRight size={18}/>
+                </Button>
+              </Link>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-8 md:mt-10 flex items-center gap-5">
+              <div className="flex -space-x-2.5">
+                {['bg-red-500','bg-orange-500','bg-blue-500','bg-emerald-500','bg-purple-500'].map((c, i) => (
+                  <div key={i} className={`w-9 h-9 rounded-full ${c} ring-2 ring-white dark:ring-ink-900 grid place-items-center text-white text-xs font-bold`}>
+                    {['👤','🤝','🚑','🚒','👮'][i]}
+                  </div>
+                ))}
+              </div>
+              <div className="leading-tight">
+                <div className="text-sm font-semibold text-ink-900 dark:text-white">9 roles · 1 network</div>
+                <div className="text-xs text-ink-500 dark:text-ink-400">From citizens to command centers</div>
+              </div>
+            </div>
+
+            {/* Quick trust strip */}
+            <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
+              {[
+                { v: '< 30s', l: 'AI triage' },
+                { v: '9',     l: 'stakeholder roles' },
+                { v: '24/7',  l: 'real-time alerts' },
+              ].map(s => (
+                <div key={s.l} className="rounded-xl glass px-3 py-2.5">
+                  <div className="text-lg font-black text-brand-600 dark:text-brand-400 leading-none">{s.v}</div>
+                  <div className="mt-1 text-[11px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">{s.l}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Hero: Command Center Preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 28, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.65, delay: 0.15 }}
+            className="relative"
+          >
+            <div aria-hidden className="absolute -inset-6 bg-gradient-to-br from-brand-500/25 to-amber-500/20 rounded-[2rem] blur-2xl"/>
+            <Card className="relative !p-0 overflow-hidden shadow-card-lg">
+              {/* Window chrome */}
+              <div className="p-3.5 md:p-4 border-b border-ink-100 dark:border-ink-800 flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-red-400"/>
+                  <span className="w-3 h-3 rounded-full bg-amber-400"/>
+                  <span className="w-3 h-3 rounded-full bg-emerald-400"/>
+                </div>
+                <div className="ml-3 text-xs font-semibold text-ink-500 dark:text-ink-400 flex items-center gap-1.5">
+                  <Shield size={12}/> Command Center · <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/>LIVE</span>
+                </div>
               </div>
 
-              <h1 className="mt-6 max-w-3xl text-5xl font-black leading-[1.02] tracking-[-0.045em] text-slate-950 sm:text-6xl lg:text-7xl dark:text-white">
-                {tr("hero.title", "Faster decisions.")}{" "}
-                <span className="bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 bg-clip-text text-transparent">
-                  {tr("hero.title_gradient", "Safer communities.")}
-                </span>
-              </h1>
-
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl dark:text-slate-300">
-                {tr(
-                  "hero.subtitle",
-                  "Bring citizens, responders, hospitals, municipalities, and relief teams into one trusted operating picture—from the first report to the final update.",
-                )}
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <PrimaryLink to="/app/report" className="sm:min-w-[190px]">
-                  <AlertTriangle size={18} aria-hidden="true" />
-                  {tr("hero.cta_report", "Report an emergency")}
-                </PrimaryLink>
-                <SecondaryLink to="/app/login" className="sm:min-w-[170px]">
-                  {tr("hero.cta_app", "Open platform")}
-                  <ArrowRight size={18} aria-hidden="true" />
-                </SecondaryLink>
-              </div>
-
-              <div className="mt-9 grid max-w-2xl gap-3 sm:grid-cols-3">
+              {/* KPI row */}
+              <div className="p-4 md:p-5 grid grid-cols-3 gap-2.5 md:gap-3">
                 {[
-                  { icon: MapPin, text: "Location-aware reporting" },
-                  { icon: Brain, text: "AI-assisted triage" },
-                  { icon: LockKeyhole, text: "Role-based coordination" },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={item.text}
-                      className="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300"
-                    >
-                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                        <Icon size={14} aria-hidden="true" />
-                      </span>
-                      {item.text}
-                    </div>
-                  );
-                })}
+                  { v:'3',  l:'Critical', c:'text-red-600 dark:text-red-400' },
+                  { v:'12', l:'Active',   c:'text-orange-600 dark:text-orange-400' },
+                  { v:'47', l:'Resolved', c:'text-emerald-600 dark:text-emerald-400' },
+                ].map(s => (
+                  <div key={s.l} className="rounded-xl bg-ink-50 dark:bg-ink-800/60 p-3 text-center">
+                    <div className={`text-2xl md:text-3xl font-black ${s.c} leading-none`}>{s.v}</div>
+                    <div className="mt-1 text-[10px] font-bold text-ink-500 dark:text-ink-400 uppercase tracking-widest">{s.l}</div>
+                  </div>
+                ))}
               </div>
-            </motion.div>
 
-            <motion.div
-              initial={
-                reduceMotion ? false : { opacity: 0, y: 28, scale: 0.97 }
-              }
-              animate={
-                reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }
-              }
-              transition={{
-                duration: 0.75,
-                delay: 0.12,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="relative"
-            >
-              <div
-                className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-blue-500/15 via-transparent to-red-500/20 blur-2xl"
-                aria-hidden="true"
-              />
-              <CommandCenterPreview />
-            </motion.div>
-          </div>
-        </section>
-
-        <section
-          className="border-y border-slate-200 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/40"
-          aria-label="Platform summary"
-        >
-          <div className="mx-auto grid max-w-7xl divide-y divide-slate-200 px-5 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6 lg:px-8 dark:divide-slate-800">
-            {[
-              { value: "9", label: "connected operational roles", icon: Users },
-              {
-                value: "6",
-                label: "AI-assisted intelligence workflows",
-                icon: Sparkles,
-              },
-              {
-                value: "1",
-                label: "shared, live operating picture",
-                icon: Activity,
-              },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className="flex items-center justify-center gap-4 px-4 py-6 sm:py-7"
-                >
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-white text-blue-600 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:text-blue-400 dark:ring-slate-800">
-                    <Icon size={19} aria-hidden="true" />
-                  </span>
-                  <div>
-                    <strong className="block text-2xl font-black text-slate-950 dark:text-white">
-                      {item.value}
-                    </strong>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {item.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <section
-          id="problem"
-          aria-labelledby="problem-title"
-          className="py-20 sm:py-24"
-        >
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-6 lg:grid-cols-[.9fr_1.1fr] lg:gap-16 lg:px-8">
-            <Reveal>
-              <SectionIntro
-                id="problem-title"
-                align="left"
-                eyebrow={tr("problem.eyebrow", "The response gap")}
-                title={tr(
-                  "problem.title",
-                  "Emergencies move faster than fragmented information.",
-                )}
-                sub={tr(
-                  "problem.sub",
-                  "When reports, locations, decisions, and resources live in separate channels, teams lose time rebuilding the same picture.",
-                )}
-              />
-            </Reveal>
-
-            <Reveal delay={0.08}>
-              <div className="relative overflow-hidden rounded-3xl border border-red-200 bg-gradient-to-br from-red-50 to-orange-50 p-6 shadow-xl shadow-red-950/5 sm:p-8 dark:border-red-500/20 dark:from-red-500/10 dark:to-orange-500/5">
-                <div
-                  className="absolute -right-12 -top-12 h-44 w-44 rounded-full bg-red-500/10 blur-2xl"
-                  aria-hidden="true"
-                />
-                <div className="relative flex items-start gap-4">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-600 text-white shadow-lg shadow-red-600/20">
-                    <AlertTriangle size={22} aria-hidden="true" />
-                  </span>
-                  <div>
-                    <h3 className="text-xl font-black text-red-950 dark:text-red-200">
-                      {tr(
-                        "problem.banner_title",
-                        "Every handoff can become a delay.",
-                      )}
-                    </h3>
-                    <p className="mt-2 leading-7 text-red-900/75 dark:text-red-200/75">
-                      {tr(
-                        "problem.banner_body",
-                        "Crisis response needs a shared source of truth that turns public reports into coordinated, accountable action without overwhelming the people using it.",
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <div className="relative mt-6 grid gap-3 sm:grid-cols-3">
+              {/* Fake map preview */}
+              <div className="px-4 md:px-5 pb-4 md:pb-5">
+                <div className="relative rounded-xl overflow-hidden h-56 md:h-64 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-ink-800 dark:to-ink-900 border border-ink-100 dark:border-ink-800">
+                  <div className="absolute inset-0 opacity-50"
+                    style={{
+                      backgroundImage:
+                        'linear-gradient(rgba(15,23,42,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.06) 1px,transparent 1px)',
+                      backgroundSize: '24px 24px',
+                    }} aria-hidden/>
+                  {/* Roads */}
+                  <div aria-hidden className="absolute left-0 right-0 top-[45%] h-2 bg-white/80 dark:bg-ink-700/70 rounded-full -translate-y-1/2"/>
+                  <div aria-hidden className="absolute top-0 bottom-0 left-[36%] w-2 bg-white/80 dark:bg-ink-700/70 rounded-full"/>
+                  {/* Curved road */}
+                  <div aria-hidden
+                    className="absolute left-[10%] right-[10%] top-[70%] h-2 bg-white/70 dark:bg-ink-700/50 rounded-full"
+                    style={{ transform:'rotate(-6deg)' }}/>
+                  {/* Pins */}
                   {[
-                    "Scattered reports",
-                    "Unclear priorities",
-                    "Duplicated effort",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-xl border border-red-200/80 bg-white/65 px-3 py-3 text-xs font-bold text-red-900 backdrop-blur dark:border-red-500/20 dark:bg-slate-950/25 dark:text-red-200"
-                    >
-                      {item}
-                    </div>
+                    { top:'22%', left:'28%', color:'bg-red-500', pulse:true },
+                    { top:'50%', left:'56%', color:'bg-red-500', pulse:true },
+                    { top:'38%', left:'72%', color:'bg-orange-500', pulse:true },
+                    { top:'68%', left:'24%', color:'bg-amber-500' },
+                    { top:'26%', left:'82%', color:'bg-emerald-500' },
+                  ].map((p, i) => (
+                    <div key={i}
+                      className={`absolute ${p.color} w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-ink-900 shadow-md -translate-x-1/2 -translate-y-full ${p.pulse ? 'pulse-dot text-red-500' : ''}`}
+                      style={{ top: p.top, left: p.left }}/>
                   ))}
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
+                  {/* POIs */}
+                  <div className="absolute top-[14%] right-[10%] w-8 h-8 rounded-lg bg-pink-500 text-white grid place-items-center text-sm font-bold shadow-lg" aria-hidden>H</div>
+                  <div className="absolute bottom-[14%] left-[12%] w-8 h-8 rounded-lg bg-blue-500 text-white grid place-items-center text-sm font-bold shadow-lg" aria-hidden>🚓</div>
 
-        <section
-          id="features"
-          aria-labelledby="features-title"
-          className="border-y border-slate-200 bg-slate-50/70 py-20 sm:py-24 dark:border-slate-800 dark:bg-slate-900/30"
-        >
-          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <Reveal>
-              <SectionIntro
-                id="features-title"
-                eyebrow={tr("solution.eyebrow", "One coordinated system")}
-                title={tr(
-                  "solution.title",
-                  "Designed around the decisions people need to make.",
-                )}
-                sub={tr(
-                  "solution.sub",
-                  "The experience is organized into three clear jobs: capture the right information, understand the situation, and coordinate a response.",
-                )}
-              />
-            </Reveal>
-
-            <div className="mt-12 grid gap-5 lg:grid-cols-3">
-              {FEATURE_GROUPS.map((group, groupIndex) => (
-                <Reveal
-                  key={group.title}
-                  delay={groupIndex * 0.07}
-                  className="h-full"
-                >
-                  <article className="flex h-full flex-col rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-6 dark:border-slate-800 dark:bg-slate-900">
-                    <div
-                      className={`rounded-2xl bg-gradient-to-br p-4 ${group.tone}`}
-                    >
-                      <div className="text-[10px] font-black uppercase tracking-[0.18em] opacity-80">
-                        {group.eyebrow}
-                      </div>
-                      <h3 className="mt-1 text-xl font-black text-slate-950 dark:text-white">
-                        {group.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                        {group.desc}
-                      </p>
+                  {/* AI triage toast */}
+                  <div className="absolute bottom-3 left-3 right-3 glass-strong rounded-xl p-2.5 flex items-center gap-2.5 shadow-card">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 text-white grid place-items-center shadow-md shrink-0">
+                      <Bot size={16}/>
                     </div>
-
-                    <div className="mt-3 flex-1 divide-y divide-slate-100 dark:divide-slate-800">
-                      {group.keys.map((key) => {
-                        const feature = FEATURE_META[key];
-                        const Icon = feature.icon;
-                        return (
-                          <div
-                            key={key}
-                            className="flex gap-3 py-4 first:pt-2 last:pb-1"
-                          >
-                            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                              <Icon size={17} aria-hidden="true" />
-                            </span>
-                            <div>
-                              <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">
-                                {tr(`features.${key}.title`, feature.title)}
-                              </h4>
-                              <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                                {tr(`features.${key}.desc`, feature.desc)}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="workflow"
-          aria-labelledby="workflow-title"
-          className="py-20 sm:py-24"
-        >
-          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <Reveal>
-              <SectionIntro
-                id="workflow-title"
-                eyebrow={tr("workflow.eyebrow", "From signal to action")}
-                title={tr(
-                  "workflow.title",
-                  "A response flow that stays understandable.",
-                )}
-                sub="Every stage has a clear owner, useful context, and a visible next action."
-              />
-            </Reveal>
-
-            <div className="relative mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div
-                className="absolute left-[12.5%] right-[12.5%] top-8 hidden h-px bg-gradient-to-r from-red-300 via-blue-300 to-emerald-300 lg:block dark:from-red-500/40 dark:via-blue-500/40 dark:to-emerald-500/40"
-                aria-hidden="true"
-              />
-              {workflow.slice(0, 4).map((step, index) => (
-                <Reveal
-                  key={`${step.title}-${index}`}
-                  delay={index * 0.07}
-                  className="relative"
-                >
-                  <article className="h-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <div className="relative z-10 grid h-16 w-16 place-items-center rounded-2xl border-4 border-white bg-slate-950 text-xl font-black text-white shadow-lg dark:border-slate-950 dark:bg-blue-600">
-                      {String(index + 1).padStart(2, "0")}
-                    </div>
-                    <div className="mt-5 flex items-center gap-2">
-                      <h3 className="text-lg font-black text-slate-950 dark:text-white">
-                        {step.title}
-                      </h3>
-                      {index > 0 && (
-                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
-                          AI assisted
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                      {step.desc}
-                    </p>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="roles"
-          aria-labelledby="roles-title"
-          className="border-y border-slate-200 bg-slate-950 py-20 text-white sm:py-24 dark:border-slate-800"
-        >
-          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <Reveal>
-              <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-                <SectionIntro
-                  id="roles-title"
-                  align="left"
-                  eyebrow={tr("roles.eyebrow", "Connected roles")}
-                  title={tr("roles.title", "One network, purpose-built views.")}
-                  sub="People see the same incident truth, but each role gets the tools and actions relevant to its responsibility."
-                />
-                <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
-                  <LockKeyhole
-                    className="mt-0.5 shrink-0 text-blue-400"
-                    size={18}
-                    aria-hidden="true"
-                  />
-                  Role-based access keeps sensitive operational details with
-                  authorized teams while preserving clear public guidance.
-                </div>
-              </div>
-            </Reveal>
-
-            <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {roles.map((role, index) => {
-                const meta = ROLE_META[role];
-                const Icon = meta.icon;
-                return (
-                  <Reveal key={role} delay={(index % 3) * 0.04}>
-                    <article className="group flex h-full gap-4 rounded-2xl border border-white/10 bg-white/[0.045] p-4 transition hover:border-white/20 hover:bg-white/[0.075]">
-                      <span
-                        className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${meta.tone}`}
-                      >
-                        <Icon size={20} aria-hidden="true" />
-                      </span>
-                      <div>
-                        <h3 className="font-extrabold text-white">
-                          {tr(`roles.${role}.name`, meta.name)}
-                        </h3>
-                        <p className="mt-1 text-xs leading-5 text-slate-400">
-                          {tr(`roles.${role}.desc`, meta.desc)}
-                        </p>
-                      </div>
-                    </article>
-                  </Reveal>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section
-          aria-labelledby="ai-title"
-          className="relative overflow-hidden py-20 sm:py-24"
-        >
-          <div
-            className="absolute left-1/2 top-1/2 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl"
-            aria-hidden="true"
-          />
-          <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-6 lg:grid-cols-[1fr_.95fr] lg:px-8">
-            <Reveal>
-              <SectionIntro
-                id="ai-title"
-                align="left"
-                eyebrow="AI intelligence engine"
-                title="Useful automation, with people in control."
-                sub="AI reduces the time spent reading, translating, and structuring incoming information. Authorized teams still verify reports and make operational decisions."
-              />
-
-              <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                {AI_CAPABILITIES.map((capability) => {
-                  const Icon = capability.icon;
-                  return (
-                    <div
-                      key={capability.text}
-                      className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
-                    >
-                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
-                        <Icon size={15} aria-hidden="true" />
-                      </span>
-                      <span className="text-xs font-semibold leading-5 text-slate-700 dark:text-slate-300">
-                        {capability.text}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 text-white shadow-2xl">
-                <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-500 text-white shadow-lg shadow-violet-500/20">
-                      <Bot size={18} />
-                    </span>
-                    <div>
-                      <div className="text-sm font-black">
-                        AI incident briefing
-                      </div>
-                      <div className="text-[10px] text-slate-400">
-                        Awaiting human verification
+                    <div className="min-w-0 leading-tight">
+                      <div className="text-xs font-bold text-ink-900 dark:text-white">AI Triage Complete</div>
+                      <div className="text-[10.5px] text-ink-500 dark:text-ink-400 truncate">
+                        Flood · Critical · 3 responders dispatched
                       </div>
                     </div>
-                  </div>
-                  <span className="rounded-full bg-amber-400/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-amber-300">
-                    Draft
-                  </span>
-                </div>
-
-                <div className="p-5">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {[
-                      { label: "Incident", value: "Urban flood" },
-                      {
-                        label: "Severity",
-                        value: "Critical · 92%",
-                        accent: "text-red-400",
-                      },
-                      { label: "People at risk", value: "8–15 estimated" },
-                      {
-                        label: "Nearest unit",
-                        value: "4 min ETA",
-                        accent: "text-emerald-300",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.label}
-                        className="rounded-xl border border-white/10 bg-white/[0.04] p-3"
-                      >
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
-                          {item.label}
-                        </div>
-                        <div
-                          className={`mt-1 text-sm font-extrabold ${item.accent || "text-white"}`}
-                        >
-                          {item.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.04] p-4">
-                    <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
-                      Recommended resources
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {[
-                        "Rescue boat",
-                        "Ambulance",
-                        "Police",
-                        "Shelter",
-                        "Water",
-                      ].map((resource) => (
-                        <span
-                          key={resource}
-                          className="rounded-lg bg-white/[0.07] px-2.5 py-1.5 text-[10px] font-bold text-slate-200"
-                        >
-                          {resource}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex items-start gap-3 rounded-xl border border-blue-400/15 bg-blue-400/[0.07] p-4">
-                    <Shield
-                      className="mt-0.5 shrink-0 text-blue-300"
-                      size={17}
-                    />
-                    <div>
-                      <div className="text-[10px] font-black uppercase tracking-wider text-blue-300">
-                        Suggested public guidance
-                      </div>
-                      <p className="mt-1 text-xs leading-5 text-slate-300">
-                        Move to higher ground. Avoid walking or driving through
-                        floodwater. Follow verified local instructions.
-                      </p>
-                    </div>
+                    <div className="ml-auto text-[10.5px] font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">ETA 4m</div>
                   </div>
                 </div>
               </div>
-            </Reveal>
-          </div>
-        </section>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
 
-        <section
-          id="benefits"
-          aria-labelledby="benefits-title"
-          className="border-y border-slate-200 bg-slate-50/70 py-20 sm:py-24 dark:border-slate-800 dark:bg-slate-900/30"
-        >
-          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <Reveal>
-              <SectionIntro
-                id="benefits-title"
-                eyebrow={tr("benefits.eyebrow", "Operational value")}
-                title={tr(
-                  "benefits.title",
-                  "Better coordination at every level.",
-                )}
-                sub="A calmer interface, clearer ownership, and shared context help teams spend more time responding and less time reconstructing information."
-              />
-            </Reveal>
-
-            <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {benefits.slice(0, 6).map((benefit, index) => (
-                <Reveal
-                  key={`${benefit.title}-${index}`}
-                  delay={(index % 3) * 0.05}
-                >
-                  <article className="flex h-full gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <CheckCircle2
-                      className="mt-0.5 shrink-0 text-emerald-500"
-                      size={21}
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h3 className="font-extrabold text-slate-950 dark:text-white">
-                        {benefit.title}
-                      </h3>
-                      <p className="mt-1.5 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                        {benefit.desc}
-                      </p>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
+      {/* ================================================================ PROBLEM */}
+      <Section id="problem" bg="red">
+        <SectionHeading eyebrow={t('problem.eyebrow')} title={t('problem.title')} sub={t('problem.sub')}/>
+        <Card className="mt-8 !bg-gradient-to-r from-red-50/90 to-amber-50/90 dark:!from-red-500/10 dark:!to-amber-500/5 !border-red-200/80 dark:!border-red-500/20">
+          <div className="flex flex-col md:flex-row md:items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-red-500 text-white grid place-items-center shadow-lg shadow-red-500/25 shrink-0">
+              <AlertTriangle size={22}/>
             </div>
-          </div>
-        </section>
-
-        <section
-          id="future"
-          aria-labelledby="future-title"
-          className="py-20 sm:py-24"
-        >
-          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-950/5 dark:border-slate-800 dark:bg-slate-900">
-              <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[.8fr_1.2fr] lg:p-10">
-                <Reveal>
-                  <SectionIntro
-                    id="future-title"
-                    align="left"
-                    eyebrow={tr("future.eyebrow", "Built to evolve")}
-                    title={tr(
-                      "future.title",
-                      "A practical path toward stronger resilience.",
-                    )}
-                    sub="Start with a clear coordination foundation, then connect additional channels and intelligence as operations mature."
-                  />
-                </Reveal>
-
-                <div className="grid content-start gap-3 sm:grid-cols-2">
-                  {futureItems.slice(0, 6).map((item, index) => (
-                    <Reveal key={`${item}-${index}`} delay={(index % 2) * 0.04}>
-                      <div className="flex min-h-14 items-center gap-3 rounded-xl bg-slate-50 p-3 text-sm font-bold text-slate-700 ring-1 ring-slate-200 dark:bg-slate-950/60 dark:text-slate-300 dark:ring-slate-800">
-                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
-                          <Zap size={15} aria-hidden="true" />
-                        </span>
-                        {item}
-                      </div>
-                    </Reveal>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="pb-20 sm:pb-24" aria-labelledby="cta-title">
-          <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-            <Reveal>
-              <div className="relative isolate overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-12 text-center text-white shadow-2xl sm:px-12 sm:py-16">
-                <div
-                  className="absolute -left-28 -top-28 -z-10 h-72 w-72 rounded-full bg-blue-500/25 blur-3xl"
-                  aria-hidden="true"
-                />
-                <div
-                  className="absolute -bottom-32 -right-24 -z-10 h-80 w-80 rounded-full bg-red-500/25 blur-3xl"
-                  aria-hidden="true"
-                />
-                <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-red-600 shadow-lg shadow-red-600/25">
-                  <Siren size={25} aria-hidden="true" />
-                </div>
-                <h2
-                  id="cta-title"
-                  className="mx-auto mt-5 max-w-3xl text-3xl font-black tracking-tight sm:text-4xl"
-                >
-                  Ready to close the response gap?
-                </h2>
-                <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-300">
-                  Report an emergency now, or open the platform to explore the
-                  coordinated response experience.
-                </p>
-                <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                  <PrimaryLink to="/app/report">
-                    <AlertTriangle size={18} />
-                    Report emergency
-                  </PrimaryLink>
-                  <Link
-                    to="/app/login"
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white px-5 py-3 text-sm font-extrabold text-slate-950 transition hover:-translate-y-0.5 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-950"
-                  >
-                    Launch platform
-                    <ChevronRight size={18} />
-                  </Link>
-                </div>
-                <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] font-semibold text-slate-400">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Check size={13} className="text-emerald-400" /> Guided
-                    reporting
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Route size={13} className="text-emerald-400" /> Live
-                    routing
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Clock3 size={13} className="text-emerald-400" /> Real-time
-                    status
-                  </span>
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-950">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 px-5 text-center sm:px-6 md:flex-row md:text-left lg:px-8">
-          <div className="flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-red-600 to-orange-500 text-white shadow-lg shadow-red-600/15">
-              <Shield size={18} aria-hidden="true" />
-            </span>
             <div>
-              <div className="font-black text-slate-950 dark:text-white">
-                {tr("brand", "Crisis Response Network")}
+              <h3 className="font-bold text-lg flex items-center gap-2 text-red-700 dark:text-red-400">
+                {t('problem.banner_title')}
+              </h3>
+              <p className="mt-1.5 text-ink-700 dark:text-ink-300 leading-relaxed">
+                {t('problem.banner_body')}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </Section>
+
+      {/* ================================================================ FEATURES */}
+      <Section id="features" bg="muted">
+        <SectionHeading eyebrow={t('solution.eyebrow')} title={t('solution.title')} sub={t('solution.sub')}/>
+        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {features.map((f, i) => (
+            <motion.div key={f.k}
+              initial={{ opacity:0, y: 16 }}
+              whileInView={{ opacity:1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration:.4, delay: i * 0.04 }}>
+              <Card hover className="h-full flex flex-col">
+                <FeatureIcon tone={f.tone}>{f.icon}</FeatureIcon>
+                <h3 className="mt-4 font-bold text-[15px] text-ink-900 dark:text-white leading-snug">
+                  {t(`features.${f.k}.title`)}
+                </h3>
+                <p className="mt-1.5 text-[13px] text-ink-500 dark:text-ink-400 leading-relaxed flex-1">
+                  {t(`features.${f.k}.desc`)}
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ================================================================ HOW IT WORKS */}
+      <Section id="how">
+        <SectionHeading eyebrow={t('workflow.eyebrow')} title={t('workflow.title')}/>
+        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {steps.map((s, i) => (
+            <div key={i} className="relative">
+              <Card className="h-full relative overflow-hidden">
+                {/* Step number */}
+                <div className="absolute -top-3 -left-3 w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white font-black text-sm grid place-items-center shadow-lg shadow-brand-600/25 ring-4 ring-white dark:ring-ink-900">
+                  {i + 1}
+                </div>
+                <div className="pt-4">
+                  <div className="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-[0.18em] mb-2">
+                    Step {i + 1}
+                  </div>
+                  <h4 className="font-bold text-[15px] text-ink-900 dark:text-white leading-snug mb-1">{s.title}</h4>
+                  <p className="text-[13px] text-ink-500 dark:text-ink-400 leading-relaxed">{s.desc}</p>
+                  {i > 0 && i < steps.length - 1 && (
+                    <span className="mt-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300">
+                      <Sparkles size={10}/> AI
+                    </span>
+                  )}
+                </div>
+              </Card>
+              {/* Connector between cards on desktop */}
+              {i < steps.length - 1 && (
+                <div aria-hidden className="hidden lg:block absolute top-1/2 -right-2 w-4 h-px bg-gradient-to-r from-ink-200 to-transparent dark:from-ink-700"/>
+              )}
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ================================================================ ROLES */}
+      <Section id="roles" bg="muted">
+        <SectionHeading eyebrow={t('roles.eyebrow')} title={t('roles.title')}
+          sub="Each stakeholder sees a purpose-built dashboard — no noise, no training required."/>
+        <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+          {roles.map((r, i) => {
+            const { Icon, gradient, text } = roleStyles[r]
+            return (
+              <motion.div key={r}
+                initial={{ opacity:0, y: 16 }}
+                whileInView={{ opacity:1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration:.35, delay: i * 0.04 }}>
+                <Card hover className="h-full">
+                  <div className={`w-12 h-12 rounded-2xl grid place-items-center bg-gradient-to-br ${gradient} mb-4`}>
+                    <Icon size={24} className={text}/>
+                  </div>
+                  <h4 className="font-bold text-[15px] text-ink-900 dark:text-white">{t(`roles.${r}.name`)}</h4>
+                  <p className="mt-1.5 text-[13px] text-ink-500 dark:text-ink-400 leading-relaxed">
+                    {t(`roles.${r}.desc`)}
+                  </p>
+                </Card>
+              </motion.div>
+            )
+          })}
+        </div>
+      </Section>
+
+      {/* ================================================================ AI */}
+      <Section id="ai" bg="ai" className="relative">
+        <div aria-hidden className="absolute inset-0 bg-grid opacity-40 [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]"/>
+        <div className="relative grid md:grid-cols-2 gap-8 lg:gap-14 items-center">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-purple-600 dark:text-purple-400 mb-3 flex items-center gap-1.5">
+              <Sparkles size={13}/> AI Intelligence Engine
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-[40px] font-extrabold leading-[1.15] text-ink-900 dark:text-white">
+              6 AI models, working in parallel —{' '}
+              <span className="gradient-text">before a human sees the report.</span>
+            </h2>
+            <p className="mt-4 text-ink-600 dark:text-ink-300 leading-relaxed max-w-xl">
+              Every incoming report is processed end-to-end in seconds — transcribed,
+              translated, analyzed for hazards, scored for severity, deduplicated, and routed
+              to the right responder.
+            </p>
+            <ul className="mt-6 space-y-2.5">
+              {aiCaps.map((x, i) => (
+                <li key={i} className="flex items-start gap-3 glass-strong rounded-xl p-3 text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 text-white grid place-items-center shrink-0 shadow-md">
+                    {x.icon}
+                  </div>
+                  <span className="text-ink-700 dark:text-ink-200 leading-relaxed pt-0.5">{x.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* AI briefing mock card */}
+          <Card className="!p-6 !bg-gradient-to-br from-ink-900 to-ink-800 !text-white !border-0 shadow-card-lg">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 grid place-items-center shadow-lg">
+                <Bot size={18}/>
               </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                {tr("footer.tagline", "From report to coordinated action.")}
+              <div>
+                <div className="font-bold text-[15px]">AI Incident Briefing</div>
+                <div className="text-[11px] text-ink-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"/> Generated in 2.4s
+                </div>
               </div>
+            </div>
+            <div className="space-y-3 text-sm">
+              <Row k="Type" v={<b className="capitalize">Flood</b>}/>
+              <Row k="Severity" v={<span className="text-red-400 font-bold">CRITICAL · 92%</span>}/>
+              <Row k="Victims (est.)" v={<b>8 – 15</b>}/>
+              <Row k="ETA responders" v={<b>4 minutes</b>}/>
+              <Row k="Rescue difficulty" v={<b className="text-amber-400">High</b>}/>
+              <div className="border-t border-white/10 pt-3">
+                <div className="text-[11px] uppercase tracking-wider text-ink-400 font-bold mb-2">Required resources</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {['rescue boat','ambulance','volunteers','shelter','food','water'].map(r => (
+                    <span key={r} className="px-2 py-1 rounded-md bg-white/10 text-xs font-medium">{r}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="border-t border-white/10 pt-3">
+                <div className="text-[11px] uppercase tracking-wider text-ink-400 font-bold mb-1.5">Safety instruction</div>
+                <div className="text-xs leading-relaxed text-ink-200">
+                  Move to higher ground immediately. Do not walk or drive through flood water.
+                  Stay tuned to local alerts for evacuation routes.
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </Section>
+
+      {/* ================================================================ BENEFITS */}
+      <Section id="benefits">
+        <SectionHeading eyebrow={t('benefits.eyebrow')} title={t('benefits.title')}/>
+        <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {benefits.map((b, i) => (
+            <motion.div key={i}
+              initial={{ opacity:0, x: -16 }}
+              whileInView={{ opacity:1, x: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration:.35, delay: i * 0.05 }}>
+              <Card hover className="h-full flex gap-3.5">
+                <CheckCircle2 className="text-emerald-500 flex-shrink-0 mt-0.5" size={22}/>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-[15px] text-ink-900 dark:text-white">{b.title}</h4>
+                  <p className="mt-1 text-[13px] text-ink-500 dark:text-ink-400 leading-relaxed">{b.desc}</p>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ================================================================ MAP / TRUST */}
+      <Section id="map" bg="muted">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 items-center">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-400 mb-3 flex items-center gap-1.5">
+              <Map size={13}/> Live Shared Map
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold leading-[1.15] text-ink-900 dark:text-white">
+              One map. Every incident, every resource — updated live.
+            </h2>
+            <p className="mt-4 text-ink-600 dark:text-ink-300 leading-relaxed max-w-lg">
+              Color-coded severity pins, POIs for hospitals/police/fire/shelters, ETA-based routing
+              for driving, walking, and cycling, and real-time WebSocket updates — no refresh needed.
+            </p>
+            <ul className="mt-6 space-y-2.5">
+              {[
+                { icon:<AlertTriangle size={15} className="text-red-500"/>, t:'Critical / High / Moderate / Low severity coding' },
+                { icon:<LifeBuoy size={15} className="text-blue-500"/>,    t:'One-tap routing from your location to any incident' },
+                { icon:<Shield size={15} className="text-purple-500"/>,    t:'Responder, hospital, shelter, and supply POIs' },
+                { icon:<Eye size={15} className="text-emerald-500"/>,     t:'Public alerts & evacuation radius overlays' },
+              ].map((x, i) => (
+                <li key={i} className="flex items-center gap-3 text-sm text-ink-700 dark:text-ink-200">
+                  <span className="w-7 h-7 rounded-lg bg-white dark:bg-ink-900 shadow-sm border border-ink-100 dark:border-ink-800 grid place-items-center shrink-0">{x.icon}</span>
+                  {x.t}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link to="/app/login"><Button size="lg"><Map size={18}/> Open Live Map <ArrowRight size={16}/></Button></Link>
+              <Link to="/app/report"><Button size="lg" variant="secondary">Report Emergency</Button></Link>
             </div>
           </div>
 
-          <div className="text-xs text-slate-500 dark:text-slate-400">
-            {tr(
-              "footer.made_by",
-              "Built for safer, more resilient communities.",
-            )}
-          </div>
+          {/* Static map illustration card */}
+          <Card className="relative !p-0 overflow-hidden shadow-card-lg">
+            <div className="relative h-80 md:h-[400px] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-ink-800 dark:to-ink-900">
+              <div className="absolute inset-0 opacity-60"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(rgba(15,23,42,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.06) 1px,transparent 1px)',
+                  backgroundSize: '28px 28px',
+                }}/>
+              {/* Road network */}
+              <div aria-hidden className="absolute left-0 right-0 top-1/2 h-2.5 bg-white/80 dark:bg-ink-700/60 -translate-y-1/2 rounded-full"/>
+              <div aria-hidden className="absolute top-0 bottom-0 left-[30%] w-2.5 bg-white/80 dark:bg-ink-700/60 rounded-full"/>
+              <div aria-hidden className="absolute top-0 bottom-0 right-[22%] w-2 bg-white/60 dark:bg-ink-700/40 rounded-full"/>
+              <div aria-hidden className="absolute left-[10%] right-[10%] bottom-[20%] h-2 bg-white/70 dark:bg-ink-700/50 rounded-full" style={{transform:'rotate(-4deg)'}}/>
+              {/* Radius ring */}
+              <div aria-hidden className="absolute left-[52%] top-[45%] -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border-2 border-dashed border-red-400/60 bg-red-500/5"/>
+              {/* Pins */}
+              {[
+                { top:'32%', left:'30%', c:'#dc2626', big:true,  pulse:true  },
+                { top:'45%', left:'52%', c:'#dc2626', big:true,  pulse:true  },
+                { top:'28%', left:'70%', c:'#ea580c', big:true,  pulse:false },
+                { top:'60%', left:'38%', c:'#d97706', big:false, pulse:false },
+                { top:'20%', left:'80%', c:'#059669', big:false, pulse:false },
+                { top:'72%', left:'62%', c:'#059669', big:false, pulse:false },
+              ].map((p, i) => (
+                <div key={i} className="absolute" style={{ top: p.top, left: p.left, transform: 'translate(-50%,-100%)' }}>
+                  <div className="relative">
+                    {p.pulse && (
+                      <span aria-hidden className="absolute left-1/2 -translate-x-1/2 top-[50%] w-5 h-5 rounded-full"
+                        style={{ background: p.c, opacity: .25, animation: 'pinRing 1.8s cubic-bezier(.22,1,.36,1) infinite' }}/>
+                    )}
+                    <svg viewBox="0 0 32 42" width={p.big ? 38 : 30} height={p.big ? 50 : 40}
+                      style={{ filter:'drop-shadow(0 4px 6px rgba(15,23,42,.25))' }}>
+                      <path d="M16 2C8 2 2 8 2 16c0 11 14 24 14 24s14-13 14-24c0-8-6-14-14-14z"
+                        fill={p.c} stroke="#fff" strokeWidth="2"/>
+                      <circle cx="16" cy="16" r="7" fill="rgba(255,255,255,.22)"/>
+                      <circle cx="16" cy="16" r="2.5" fill="#fff"/>
+                    </svg>
+                  </div>
+                </div>
+              ))}
+              {/* Legend */}
+              <div className="absolute bottom-3 left-3 glass-strong rounded-xl p-2.5 text-[11px] font-semibold space-y-1.5 shadow-card">
+                {[
+                  { c:'#dc2626', l:'Critical' }, { c:'#ea580c', l:'High' },
+                  { c:'#d97706', l:'Moderate' }, { c:'#059669', l:'Low' },
+                ].map(x => (
+                  <div key={x.l} className="flex items-center gap-2 text-ink-700 dark:text-ink-200">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: x.c }}/>{x.l}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+      </Section>
 
-          <div className="flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 dark:border-slate-800 dark:text-slate-300">
-            <Languages size={14} aria-hidden="true" />
-            EN · ने
+      {/* ================================================================ FUTURE */}
+      <Section id="future">
+        <SectionHeading eyebrow={t('future.eyebrow')} title={t('future.title')}
+          sub="A platform built to evolve with Nepal's emergency-response ecosystem."/>
+        <div className="mt-10 grid sm:grid-cols-2 gap-3">
+          {futureItems.map((f, i) => (
+            <div key={i} className="flex items-center gap-3 glass rounded-xl p-3.5 hover:shadow-card transition-shadow">
+              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400 grid place-items-center shrink-0">
+                <Zap size={16}/>
+              </div>
+              <span className="text-sm text-ink-700 dark:text-ink-200 leading-relaxed">{f}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ================================================================ CONTACT / CTA */}
+      <Section id="contact" bg="muted">
+        <Card className="relative overflow-hidden !bg-gradient-to-br from-brand-600 via-brand-500 to-amber-500 !text-white !border-0 shadow-card-lg text-center !p-10 md:!p-14">
+          <div aria-hidden className="absolute -top-24 -right-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"/>
+          <div aria-hidden className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/10 rounded-full blur-3xl"/>
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-[11px] font-bold uppercase tracking-widest mb-5">
+              <Phone size={12}/> Get in touch
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold leading-tight">Ready to bridge the response gap?</h2>
+            <p className="mt-3 text-white/85 max-w-xl mx-auto leading-relaxed">
+              Report an emergency, or explore the live platform with a demo account.
+              Built by Team Zero Day for HackFusion 2026.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3 justify-center">
+              <Link to="/app/report">
+                <Button size="lg" variant="secondary" className="!text-brand-700 h-12 px-6 font-bold">
+                  <AlertTriangle size={18}/> Report Emergency
+                </Button>
+              </Link>
+              <Link to="/app/login">
+                <Button size="lg" className="!bg-white !text-brand-700 hover:!bg-ink-50 h-12 px-6 font-bold">
+                  Launch Platform <ArrowRight size={18}/>
+                </Button>
+              </Link>
+            </div>
           </div>
+        </Card>
+      </Section>
+
+      {/* ================================================================ FOOTER */}
+      <footer className="border-t border-ink-200 dark:border-ink-800 py-10 bg-white dark:bg-ink-950">
+        <div className={`${containerClass} flex flex-col md:flex-row items-center justify-between gap-6`}>
+          <div className="flex items-center gap-3">
+            <img src={logoImg} alt="Aapat Setu" className="w-9 h-9 rounded-xl object-contain bg-white p-0.5 shadow-lg shadow-brand-600/25" />
+            <div>
+              <div className="font-extrabold text-ink-900 dark:text-white leading-tight">{t('brand')}</div>
+              <div className="text-xs text-ink-500 dark:text-ink-400">{t('footer.tagline')}</div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-ink-500 dark:text-ink-400">
+            <a href="#features" className="hover:text-ink-900 dark:hover:text-white transition">Features</a>
+            <a href="#how"      className="hover:text-ink-900 dark:hover:text-white transition">How it works</a>
+            <a href="#ai"       className="hover:text-ink-900 dark:hover:text-white transition">AI</a>
+            <a href="#roles"    className="hover:text-ink-900 dark:hover:text-white transition">For Responders</a>
+            <a href="#map"      className="hover:text-ink-900 dark:hover:text-white transition">Live Map</a>
+            <a href="#contact"  className="hover:text-ink-900 dark:hover:text-white transition">Contact</a>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-ink-500 dark:text-ink-400">
+            <Languages size={14}/> <span>EN · ने</span>
+          </div>
+        </div>
+        <div className={`${containerClass} mt-6 pt-6 border-t border-ink-100 dark:border-ink-800 text-center text-xs text-ink-400 dark:text-ink-500`}>
+          {t('footer.made_by')}
         </div>
       </footer>
     </div>
-  );
+  )
+}
+
+function Row({ k, v }) {
+  return (
+    <div className="flex justify-between items-center gap-4">
+      <span className="text-ink-400 text-[13px]">{k}</span>
+      <span className="text-[13px] text-right">{v}</span>
+    </div>
+  )
 }
