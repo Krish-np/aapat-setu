@@ -14,7 +14,7 @@ import {
 } from '../components/ui'
 import Map from '../components/Map'
 import { useAuth } from '../store/auth'
-import { timeAgo } from '../lib/helpers'
+import RelativeTime from '../components/RelativeTime'
 import {
   AlertTriangle,
   Clock,
@@ -27,12 +27,12 @@ import {
 } from 'lucide-react'
 
 const QUICK_ACTIONS = [
-  { icon: AlertTriangle, label: 'Report Emergency', to: '/app/report', color: 'red' },
-  { icon: MapPin, label: 'Live Map', to: '/app/map', color: 'blue' },
-  { icon: Users, label: 'Tasks', to: '/app/tasks', color: 'green', roles: ['volunteer', 'responder', 'admin'] },
-  { icon: Radio, label: 'Alerts', to: '/app/alerts', color: 'amber' },
-  { icon: BarChart3, label: 'Analytics', to: '/app/analytics', color: 'purple', roles: ['responder', 'municipality', 'admin'] },
-  { icon: Clock, label: 'My Reports', to: '/app/map', color: 'indigo', roles: ['citizen'] },
+  { icon: AlertTriangle, labelKey: 'nav.report',    to: '/app/report',     color: 'red' },
+  { icon: MapPin,        labelKey: 'nav.map',        to: '/app/map',        color: 'blue' },
+  { icon: Users,         labelKey: 'nav.tasks',      to: '/app/tasks',      color: 'green',  roles: ['volunteer', 'responder', 'admin'] },
+  { icon: Radio,         labelKey: 'nav.alerts',     to: '/app/alerts',     color: 'amber' },
+  { icon: BarChart3,     labelKey: 'nav.analytics',  to: '/app/analytics',  color: 'purple', roles: ['responder', 'municipality', 'admin'] },
+  { icon: Clock,         labelKey: 'app.my_reports', to: '/app/my-reports', color: 'indigo', roles: ['citizen'] },
 ]
 
 const ACTION_COLORS = {
@@ -44,14 +44,15 @@ const ACTION_COLORS = {
   indigo: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 ring-indigo-100 dark:ring-indigo-500/20',
 }
 
-function QuickAction({ icon: Icon, label, to, color }) {
+function QuickAction({ icon: Icon, labelKey, to, color }) {
+  const { t } = useTranslation()
   return (
     <Link to={to}>
       <Card hover className="h-full">
         <div className={`w-11 h-11 rounded-xl grid place-items-center mb-3 ring-1 ring-inset ${ACTION_COLORS[color]}`}>
           <Icon size={20} />
         </div>
-        <div className="font-semibold text-sm text-ink-900 dark:text-white">{label}</div>
+        <div className="font-semibold text-sm text-ink-900 dark:text-white">{t(labelKey)}</div>
       </Card>
     </Link>
   )
@@ -216,10 +217,10 @@ export default function AppHome() {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Active" value={active.length} color="orange" sub="In progress" icon={<Activity size={18} />} />
-        <StatCard label="Critical" value={critical.length} color="red" sub="Need attention now" icon={<AlertTriangle size={18} />} />
-        <StatCard label="Resolved" value={stats?.by_status?.resolved || 0} color="green" sub="Completed" icon={<Shield size={18} />} />
-        <StatCard label="Total" value={stats?.total || 0} color="blue" sub="All incidents" icon={<Radio size={18} />} />
+        <StatCard label={t('common.active')} value={active.length} color="orange" sub={t('common.in_progress')} icon={<Activity size={18} />} />
+        <StatCard label={t('common.critical')} value={critical.length} color="red" sub={t('common.need_attention')} icon={<AlertTriangle size={18} />} />
+        <StatCard label={t('common.resolved')} value={stats?.by_status?.resolved || 0} color="green" sub={t('common.completed')} icon={<Shield size={18} />} />
+        <StatCard label={t('analytics.total')} value={stats?.total || 0} color="blue" sub={t('common.all_incidents')} icon={<Radio size={18} />} />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -232,36 +233,36 @@ export default function AppHome() {
         <Card className="!p-0 overflow-hidden">
           <div className="p-5 border-b border-ink-200/60 dark:border-ink-800 flex items-center justify-between">
             <h3 className="font-bold flex items-center gap-2 text-ink-900 dark:text-white">
-              <MapPin size={18} className="text-brand-600" /> Live Situation Map
+              <MapPin size={18} className="text-brand-600" /> {t('app.live_map')}
             </h3>
             <Link
               to="/app/map"
               className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
             >
-              Fullscreen →
+              {t('app.fullscreen')}
             </Link>
           </div>
           <Map incidents={active} pois={pois} height={500} zoom={13} selectable />
           <div className="px-5 py-3 border-t border-ink-200/60 dark:border-ink-800 flex gap-4 flex-wrap text-xs">
-            <Legend color="#dc2626" label="Critical" />
-            <Legend color="#ea580c" label="High" />
-            <Legend color="#d97706" label="Moderate" />
-            <Legend color="#059669" label="Low" />
-            <Legend color="#db2777" label="Hospital" />
-            <Legend color="#dc2626" label="Fire" />
-            <Legend color="#1d4ed8" label="Police" />
+            <Legend color="#dc2626" label={t('priority.critical')} />
+            <Legend color="#ea580c" label={t('priority.high')} />
+            <Legend color="#d97706" label={t('priority.moderate')} />
+            <Legend color="#059669" label={t('priority.low')} />
+            <Legend color="#db2777" label={t('incident_types.medical')} />
+            <Legend color="#dc2626" label={t('incident_types.fire')} />
+            <Legend color="#1d4ed8" label={t('map.police')} />
           </div>
         </Card>
 
         <Card>
           <h3 className="font-bold mb-4 flex items-center gap-2 text-ink-900 dark:text-white">
-            <Radio className="text-brand-600" size={18} /> Recent Activity
+            <Radio className="text-brand-600" size={18} /> {t('app.recent_activity')}
           </h3>
           {incidents.length === 0 ? (
             <EmptyState
               icon={<Radio size={28} />}
-              title="No activity yet"
-              description="When incidents are reported, they will appear here in real time."
+              title={t('incident.no_activity_yet')}
+              description={t('incident.no_activity_desc')}
             />
           ) : (
             <div className="space-y-2 max-h-[540px] overflow-y-auto pr-1 -mr-1">
@@ -277,13 +278,11 @@ export default function AppHome() {
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <strong className="capitalize text-sm text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                          {inc.incident_type?.replaceAll('_', ' ')}
+                          {t(`incident_types.${inc.incident_type}`, (inc.incident_type || '').replaceAll('_', ' '))}
                         </strong>
                         <Badge color={pb.color}>{pb.label}</Badge>
                       </div>
-                      <span className="text-[11px] text-ink-400 whitespace-nowrap">
-                        {timeAgo(inc.created_at)}
-                      </span>
+                      <RelativeTime ts={inc.created_at} className="text-[11px] text-ink-400 whitespace-nowrap tabular-nums" />
                     </div>
                     <p className="text-xs text-ink-500 dark:text-ink-400 line-clamp-3 mb-2 leading-relaxed break-words">
                       {inc.ai_summary || inc.description || '—'}

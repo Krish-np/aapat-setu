@@ -60,12 +60,12 @@ function generateFromIncidents(incidents, user, t) {
 
   mine.forEach(i => out.push({
     kind: 'update', color: 'purple',
-    title: `Your ${(i.incident_type||'').replaceAll('_',' ')} report is ${(i.status||'').replaceAll('_',' ')}`,
+    title: t('notifications.your_report_is', { type: t(`incident_types.${i.incident_type}`, (i.incident_type||'').replaceAll('_',' ')), status: (i.status||'').replaceAll('_',' ') }),
     message: i.ai_summary || i.description, time: i.updated_at || i.created_at,
   }))
   critical.forEach(i => out.push({
     kind: 'critical', color: 'red',
-    title: `Critical: ${(i.incident_type||'incident').replaceAll('_',' ')}`,
+    title: t('notifications.critical_type', { type: t(`incident_types.${i.incident_type}`, (i.incident_type||'incident').replaceAll('_',' ')) }),
     message: i.ai_summary || i.description, time: i.created_at,
   }))
   const seen = new Set(out.map(n => n.title + n.time))
@@ -76,14 +76,14 @@ function generateFromIncidents(incidents, user, t) {
     if (i.status !== 'resolved' && i.ai_severity !== 'critical') {
       out.push({
         kind: 'info', color: 'blue',
-        title: 'New ' + (i.incident_type||'').replaceAll('_',' ') + ' report',
+        title: t('notifications.new_report', { type: t(`incident_types.${i.incident_type}`, (i.incident_type||'').replaceAll('_',' ')) }),
         message: i.ai_summary, time: i.created_at,
       })
     }
     if (i.status === 'resolved') {
       out.push({
         kind: 'resolved', color: 'green',
-        title: (i.incident_type||'incident').replaceAll('_',' ') + ' resolved',
+        title: t('notifications.type_resolved', { type: t(`incident_types.${i.incident_type}`, (i.incident_type||'incident').replaceAll('_',' ')) }),
         message: i.ai_summary, time: i.updated_at || i.created_at,
       })
     }
@@ -114,7 +114,7 @@ export default function Notifications() {
         setLive(prev => [{
           kind: msg.data.ai_severity === 'critical' ? 'critical' : 'alert',
           color: msg.data.ai_severity === 'critical' ? 'red' : 'amber',
-          title: 'New ' + (msg.data.incident_type||'incident').replaceAll('_',' ') + ' · ' + (msg.data.ai_severity||''),
+          title: t('notifications.live_incident', { type: t(`incident_types.${msg.data.incident_type}`, (msg.data.incident_type||'incident').replaceAll('_',' ')), severity: msg.data.ai_severity||'' }),
           message: msg.data.ai_summary,
           time: new Date().toISOString(), _id: msg.data.id,
         }].concat(prev).slice(0, 15))

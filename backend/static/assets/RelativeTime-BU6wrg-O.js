@@ -1,0 +1,1 @@
+import{O as e}from"./createLucideIcon-5gylg8bU.js";import{t}from"./useRelativeTime-DPwcdrw_.js";var n=e();function r({ts:e,className:r=``}){return(0,n.jsx)(`span`,{className:r,children:t(e)})}export{r as t};

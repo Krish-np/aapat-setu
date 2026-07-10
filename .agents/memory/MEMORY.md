@@ -1,0 +1,3 @@
+- [UTC timestamp parsing](utc-timestamp-fix.md) — backend stores UTC-naive ISO datetimes (no Z); frontend must add Z before parsing or times are wrong by timezone offset
+- [Nepali relative time](nepali-time-units.md) — use full Nepali unit words (मिनेट, घण्टा, दिन…), not English abbreviations; hook lives in useRelativeTime.js
+- [React hook in map()](relative-time-component.md) — can't call useRelativeTime inside .map(); use the <RelativeTime ts={...}/> wrapper component in src/components/RelativeTime.jsx

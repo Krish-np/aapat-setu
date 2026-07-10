@@ -49,41 +49,113 @@
     "sub": "One platform. Every stakeholder. From the moment a citizen hits send to the moment the incident is resolved, every step is tracked, verified, and coordinated live."
   },
   "features": {
-    "report": { "title": "Multi-Modal Reporting", "desc": "Submit incidents with text, photos, videos, or voice recordings. Auto GPS pinpoints your location instantly." },
-    "ai": { "title": "AI Triage Engine", "desc": "Every report is verified, summarized, prioritized, cross-checked for duplicates, and assigned resources before any human sees it." },
-    "vision": { "title": "AI Image & Voice Analysis", "desc": "Detects fire, smoke, flood, damage, and injured persons from photos; transcribes and translates voice reports." },
-    "map": { "title": "Shared Live Map", "desc": "Color-coded incidents, hospitals, fire stations, shelters, and safe zones on one real-time map — no refresh needed." },
-    "cmd": { "title": "Multi-Agency Command", "desc": "Purpose-built dashboards for police, fire, hospitals, NGOs, municipalities, and volunteers — each with their own view." },
-    "risk": { "title": "AI Risk Assessment", "desc": "Computes risk score, estimated casualties, resource needs, rescue difficulty, and ETA in real time." },
-    "resource": { "title": "Resource Matching", "desc": "Automatically recommends the nearest ambulance, fire truck, shelter, or volunteer based on incident type and location." },
-    "alerts": { "title": "Public Alerts", "desc": "Broadcast evacuation orders, weather warnings, and safety instructions — translated to Nepali instantly." },
-    "analytics": { "title": "Intelligence Analytics", "desc": "Trend analysis, response times, district heatmaps, and resource utilization charts for better future response." },
-    "realtime": { "title": "Real-Time Notifications", "desc": "Citizens get live updates; responders get instant high-priority pushes via WebSockets." }
+    "report": {
+      "title": "Multi-Modal Reporting",
+      "desc": "Submit incidents with text, photos, videos, or voice recordings. Auto GPS pinpoints your location instantly."
+    },
+    "ai": {
+      "title": "AI Triage Engine",
+      "desc": "Every report is verified, summarized, prioritized, cross-checked for duplicates, and assigned resources before any human sees it."
+    },
+    "vision": {
+      "title": "AI Image & Voice Analysis",
+      "desc": "Detects fire, smoke, flood, damage, and injured persons from photos; transcribes and translates voice reports."
+    },
+    "map": {
+      "title": "Shared Live Map",
+      "desc": "Color-coded incidents, hospitals, fire stations, shelters, and safe zones on one real-time map — no refresh needed."
+    },
+    "cmd": {
+      "title": "Multi-Agency Command",
+      "desc": "Purpose-built dashboards for police, fire, hospitals, NGOs, municipalities, and volunteers — each with their own view."
+    },
+    "risk": {
+      "title": "AI Risk Assessment",
+      "desc": "Computes risk score, estimated casualties, resource needs, rescue difficulty, and ETA in real time."
+    },
+    "resource": {
+      "title": "Resource Matching",
+      "desc": "Automatically recommends the nearest ambulance, fire truck, shelter, or volunteer based on incident type and location."
+    },
+    "alerts": {
+      "title": "Public Alerts",
+      "desc": "Broadcast evacuation orders, weather warnings, and safety instructions — translated to Nepali instantly."
+    },
+    "analytics": {
+      "title": "Intelligence Analytics",
+      "desc": "Trend analysis, response times, district heatmaps, and resource utilization charts for better future response."
+    },
+    "realtime": {
+      "title": "Real-Time Notifications",
+      "desc": "Citizens get live updates; responders get instant high-priority pushes via WebSockets."
+    }
   },
   "workflow": {
     "eyebrow": "Platform Workflow",
     "title": "From emergency to resolution — in seconds.",
     "steps": [
-      { "title": "Citizen Reports", "desc": "Multi-modal: text, photo, video, or voice. GPS auto-shared." },
-      { "title": "AI Analyzes Media", "desc": "Image and voice analysis extract damage, casualties, and context." },
-      { "title": "AI Verifies", "desc": "Spam, vague reports, and duplicates are filtered out." },
-      { "title": "AI Summarizes", "desc": "Clean one-liner briefing in English & Nepali for responders." },
-      { "title": "AI Prioritizes", "desc": "Critical / High / Moderate / Low scored with confidence." },
-      { "title": "Resources Assigned", "desc": "Nearest ambulance, fire, police, volunteers dispatched." },
-      { "title": "Teams Deploy", "desc": "Responders en route, ETA shared with citizen in real time." },
-      { "title": "Resolved", "desc": "Timeline delivered to citizen, data feeds the intelligence engine." }
+      {
+        "title": "Citizen Reports",
+        "desc": "Multi-modal: text, photo, video, or voice. GPS auto-shared."
+      },
+      {
+        "title": "AI Analyzes Media",
+        "desc": "Image and voice analysis extract damage, casualties, and context."
+      },
+      {
+        "title": "AI Verifies",
+        "desc": "Spam, vague reports, and duplicates are filtered out."
+      },
+      {
+        "title": "AI Summarizes",
+        "desc": "Clean one-liner briefing in English & Nepali for responders."
+      },
+      {
+        "title": "AI Prioritizes",
+        "desc": "Critical / High / Moderate / Low scored with confidence."
+      },
+      {
+        "title": "Resources Assigned",
+        "desc": "Nearest ambulance, fire, police, volunteers dispatched."
+      },
+      {
+        "title": "Teams Deploy",
+        "desc": "Responders en route, ETA shared with citizen in real time."
+      },
+      {
+        "title": "Resolved",
+        "desc": "Timeline delivered to citizen, data feeds the intelligence engine."
+      }
     ]
   },
   "benefits": {
     "eyebrow": "Key Benefits",
     "title": "Built for the chaos of a real emergency.",
     "items": [
-      { "title": "Faster Response", "desc": "AI triage cuts dispatch time from minutes to seconds." },
-      { "title": "Fewer Duplicates", "desc": "Semantic + location-based deduplication prevents double-dispatch." },
-      { "title": "Smarter Resources", "desc": "Right team, right equipment, right place — every time." },
-      { "title": "Transparent Updates", "desc": "Citizens see the full status timeline, reducing hotline calls." },
-      { "title": "Multilingual", "desc": "Real-time English ↔ Nepali translation for voice and text." },
-      { "title": "Offline Ready", "desc": "Graceful degradation works even on patchy networks." }
+      {
+        "title": "Faster Response",
+        "desc": "AI triage cuts dispatch time from minutes to seconds."
+      },
+      {
+        "title": "Fewer Duplicates",
+        "desc": "Semantic + location-based deduplication prevents double-dispatch."
+      },
+      {
+        "title": "Smarter Resources",
+        "desc": "Right team, right equipment, right place — every time."
+      },
+      {
+        "title": "Transparent Updates",
+        "desc": "Citizens see the full status timeline, reducing hotline calls."
+      },
+      {
+        "title": "Multilingual",
+        "desc": "Real-time English ↔ Nepali translation for voice and text."
+      },
+      {
+        "title": "Offline Ready",
+        "desc": "Graceful degradation works even on patchy networks."
+      }
     ]
   },
   "future": {
@@ -112,15 +184,42 @@
   "roles": {
     "eyebrow": "Built for every stakeholder",
     "title": "Nine roles. One platform.",
-    "citizen": { "name": "Citizen", "desc": "Report emergencies in seconds with text, photo, video, or voice. Track live status and get safety instructions." },
-    "volunteer": { "name": "Trained Volunteer", "desc": "Browse nearby missions, accept rescues, post updates, and build your service history." },
-    "responder": { "name": "Emergency Responder", "desc": "See live incidents, accept or reject missions, dispatch teams, and manage rescue operations." },
-    "hospital": { "name": "Hospital", "desc": "Track incoming patients, manage bed & ICU availability, request blood, coordinate ambulances." },
-    "police": { "name": "Police", "desc": "Manage missing persons, crowd control, road blocks, and security requests." },
-    "fire": { "name": "Fire Department", "desc": "See active fires, manage truck & water availability, coordinate with other agencies." },
-    "ngo": { "name": "NGO", "desc": "Coordinate food, shelter, clothing, and supplies for affected populations." },
-    "municipality": { "name": "Municipality", "desc": "Monitor the big picture, broadcast public alerts, deploy civic resources." },
-    "admin": { "name": "Super Admin", "desc": "Manage users, responders, resources, AI settings, and system-wide analytics." }
+    "citizen": {
+      "name": "Citizen",
+      "desc": "Report emergencies in seconds with text, photo, video, or voice. Track live status and get safety instructions."
+    },
+    "volunteer": {
+      "name": "Trained Volunteer",
+      "desc": "Browse nearby missions, accept rescues, post updates, and build your service history."
+    },
+    "responder": {
+      "name": "Emergency Responder",
+      "desc": "See live incidents, accept or reject missions, dispatch teams, and manage rescue operations."
+    },
+    "hospital": {
+      "name": "Hospital",
+      "desc": "Track incoming patients, manage bed & ICU availability, request blood, coordinate ambulances."
+    },
+    "police": {
+      "name": "Police",
+      "desc": "Manage missing persons, crowd control, road blocks, and security requests."
+    },
+    "fire": {
+      "name": "Fire Department",
+      "desc": "See active fires, manage truck & water availability, coordinate with other agencies."
+    },
+    "ngo": {
+      "name": "NGO",
+      "desc": "Coordinate food, shelter, clothing, and supplies for affected populations."
+    },
+    "municipality": {
+      "name": "Municipality",
+      "desc": "Monitor the big picture, broadcast public alerts, deploy civic resources."
+    },
+    "admin": {
+      "name": "Super Admin",
+      "desc": "Manage users, responders, resources, AI settings, and system-wide analytics."
+    }
   },
   "auth": {
     "welcome": "Welcome back",
@@ -180,7 +279,11 @@
     "location": "Location",
     "description": "Description",
     "time": "Time",
-    "actions": "Actions"
+    "actions": "Actions",
+    "in_progress": "In progress",
+    "need_attention": "Need attention",
+    "completed": "Completed",
+    "all_incidents": "All incidents"
   },
   "app": {
     "greeting_citizen": "Namaste",
@@ -366,7 +469,12 @@
     "none_right_now": "No notifications right now.",
     "new_badge": "new",
     "welcome": "Welcome to Aapat Setu",
-    "welcome_msg": "AI triage engine online. You will receive real-time alerts for new incidents and updates on your reports."
+    "welcome_msg": "AI triage engine online. You will receive real-time alerts for new incidents and updates on your reports.",
+    "your_report_is": "Your {{type}} report is {{status}}",
+    "critical_type": "Critical: {{type}}",
+    "new_report": "New {{type}} report",
+    "type_resolved": "{{type}} resolved",
+    "live_incident": "New {{type}} · {{severity}}"
   },
   "knowledge": {
     "title": "First Aid & Safety Guide",
@@ -415,5 +523,73 @@
     "resolved": "Resolved",
     "location_captured": "Location captured",
     "location_failed": "Could not get location — enter manually"
+  },
+  "brand_sub": "Emergency Response",
+  "sidebar": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "priority": {
+    "critical": "Critical",
+    "high": "High",
+    "moderate": "Moderate",
+    "low": "Low"
+  },
+  "map": {
+    "police": "Police",
+    "hospital": "Hospital",
+    "fire": "Fire"
+  },
+  "incident": {
+    "ai_prediction": "AI Prediction",
+    "trend_label": "Trend",
+    "trend_incidents": "incidents are",
+    "in_last_24h": "in last 24h",
+    "no_activity_yet": "No activity yet",
+    "no_activity_desc": "When incidents are reported, they will appear here in real time.",
+    "my_reports_subtitle": "Track the status of emergencies you have reported",
+    "no_reports_desc": "When you report an emergency, you will see live updates here.",
+    "auto_summarized": "AI auto-summarized",
+    "ai_briefing": "AI Briefing",
+    "required_resources": "Required Resources",
+    "safety_instructions": "Safety Instructions",
+    "original_report": "Original Report",
+    "status_timeline": "Status Timeline",
+    "volunteer_actions": "Volunteer Actions",
+    "response_actions": "Response Actions",
+    "mark_resolved": "Mark Resolved",
+    "reported_at": "Reported {{when}}",
+    "people_affected": "people affected",
+    "contact": "Contact",
+    "photos": "Photos",
+    "ai_image_analysis": "AI Image Analysis",
+    "severity": "Severity",
+    "confidence": "Confidence",
+    "est_victims": "Est. victims",
+    "report_submitted": "Report submitted",
+    "claim_mission": "Claim this Mission",
+    "share_update": "Share update…",
+    "en_route": "En Route",
+    "on_scene": "On Scene",
+    "rescue_ongoing": "Rescue Ongoing",
+    "locating": "Locating…",
+    "loc_blocked": "Location blocked — retry",
+    "recenter_me": "Recenter on me",
+    "use_my_location": "Use my location"
+  },
+  "incident_types": {
+    "fire": "Fire",
+    "earthquake": "Earthquake",
+    "flood": "Flood",
+    "landslide": "Landslide",
+    "medical": "Medical Emergency",
+    "accident": "Road Accident",
+    "building_collapse": "Building Collapse",
+    "missing_person": "Missing Person",
+    "forest_fire": "Forest Fire",
+    "storm": "Storm",
+    "power_failure": "Power Failure",
+    "water_issue": "Water Supply Issue",
+    "other": "Other"
   }
 }

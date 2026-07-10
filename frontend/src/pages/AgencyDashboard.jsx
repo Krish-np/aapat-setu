@@ -11,7 +11,7 @@ import {
 } from '../components/ui'
 import Map from '../components/Map'
 import { useAuth } from '../store/auth'
-import { timeAgo } from '../lib/helpers'
+import RelativeTime from '../components/RelativeTime'
 import { useTranslation } from 'react-i18next'
 import { wsConnect } from '../lib/api'
 import {
@@ -375,16 +375,16 @@ export default function AgencyDashboard() {
             </div>
             <div className="min-w-0">
               <div className="font-bold flex items-center gap-2 text-ink-900 dark:text-white">
-                AI Prediction <Badge color="purple">AI</Badge>
+{t('incident.ai_prediction', 'AI Prediction')} <Badge color="purple">AI</Badge>
               </div>
               <p className="text-sm text-ink-700 dark:text-ink-300 mt-1 leading-relaxed">
                 {predict.advisory}
               </p>
               {predict.hotspot_type && predict.hotspot_type !== 'none' && (
                 <p className="text-xs text-ink-500 dark:text-ink-400 mt-2">
-                  Trend:{' '}
-                  <b className="capitalize">{predict.hotspot_type}</b> incidents are {predict.trend} (
-                  {predict.hotspot_count} in last 24h)
+                  {t('incident.trend_label', 'Trend')}:{' '}
+                  <b className="capitalize">{t(`incident_types.${predict.hotspot_type}`, predict.hotspot_type)}</b> {t('incident.trend_incidents', 'incidents are')} {predict.trend} (
+                  {predict.hotspot_count} {t('incident.in_last_24h', 'in last 24h')})
                 </p>
               )}
             </div>
@@ -428,11 +428,9 @@ export default function AgencyDashboard() {
                 >
                   <div className="flex items-start justify-between mb-1 gap-2">
                     <strong className="text-sm capitalize text-ink-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition break-words">
-                      {i.incident_type?.replaceAll('_', ' ')}
+{t(`incident_types.${i.incident_type}`, (i.incident_type || '').replaceAll('_', ' '))}
                     </strong>
-                    <span className="text-[11px] text-ink-400 whitespace-nowrap flex-shrink-0">
-                      {timeAgo(i.created_at)}
-                    </span>
+                    <RelativeTime ts={i.created_at} className="text-[11px] text-ink-400 whitespace-nowrap flex-shrink-0 tabular-nums" />
                   </div>
                   <p className="text-xs text-ink-500 dark:text-ink-400 line-clamp-3 leading-relaxed break-words">
                     {i.ai_summary || i.description || '—'}

@@ -3,7 +3,9 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from .config import settings
 
-db_url = os.environ.get("DATABASE_URL", settings.database_url)
+# Use APP_DATABASE_URL / settings.database_url; never let Replit's managed
+# DATABASE_URL (Postgres) silently override the configured SQLite default.
+db_url = settings.database_url
 connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
 engine = create_engine(
     db_url,

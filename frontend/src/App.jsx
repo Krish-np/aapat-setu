@@ -25,6 +25,7 @@ const Notifications = lazy(() => import('./pages/Notifications'))
 const Admin = lazy(() => import('./pages/Admin'))
 const AgencyDashboard = lazy(() => import('./pages/AgencyDashboard'))
 const Knowledge = lazy(() => import('./pages/Knowledge'))
+const MyReports = lazy(() => import('./pages/MyReports'))
 
 function Protected({ children, roles }) {
   const { user } = useAuth()
@@ -115,6 +116,7 @@ export default function App() {
           <Route path="/app/crews" element={<Protected roles={['responder','admin','municipality']}><Crews /></Protected>} />
           <Route path="/app/notifications" element={<Protected><Notifications /></Protected>} />
           <Route path="/app/knowledge" element={<Protected><Knowledge /></Protected>} />
+          <Route path="/app/my-reports" element={<Protected><MyReports /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
